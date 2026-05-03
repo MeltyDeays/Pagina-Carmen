@@ -41,27 +41,67 @@ export function useAdminController() {
     }
   };
 
+  const compressImage = (file) => {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = (event) => {
+        const img = new Image();
+        img.src = event.target.result;
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const MAX_WIDTH = 1000; // Resolución optimizada para móviles
+          let width = img.width;
+          let height = img.height;
+
+          if (width > height) {
+            if (width > MAX_WIDTH) {
+              height *= MAX_WIDTH / width;
+              width = MAX_WIDTH;
+            }
+          } else {
+            if (height > MAX_WIDTH) {
+              width *= MAX_WIDTH / height;
+              height = MAX_WIDTH;
+            }
+          }
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+          canvas.toBlob((blob) => {
+            resolve(new File([blob], file.name.replace(/\.[^/.]+$/, "") + ".jpg", { type: 'image/jpeg' }));
+          }, 'image/jpeg', 0.7); // 70% de calidad es el punto dulce entre peso y nitidez
+        };
+      };
+    });
+  };
+
   const uploadImages = async (files) => {
     const uploadedUrls = [];
     for (const file of files) {
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${Math.random()}.${fileExt}`;
-      const filePath = `products/${fileName}`;
+      try {
+        // Comprimir antes de subir
+        const compressedFile = await compressImage(file);
+        
+        const fileExt = 'jpg';
+        const fileName = `${Math.random().toString(36).substring(2)}.${fileExt}`;
+        const filePath = `products/${fileName}`;
 
-      const { data, error } = await ProductModel.supabase.storage
-        .from('Imagenes-Ropa')
-        .upload(filePath, file);
+        const { data, error } = await ProductModel.supabase.storage
+          .from('Imagenes-Ropa')
+          .upload(filePath, compressedFile);
 
-      if (error) {
-        console.error('Error subiendo imagen:', error);
-        continue;
+        if (error) throw error;
+
+        const { data: { publicUrl } } = ProductModel.supabase.storage
+          .from('Imagenes-Ropa')
+          .getPublicUrl(filePath);
+        
+        uploadedUrls.push(publicUrl);
+      } catch (err) {
+        console.error('Error procesando/subiendo imagen:', err);
       }
-
-      const { data: { publicUrl } } = ProductModel.supabase.storage
-        .from('Imagenes-Ropa')
-        .getPublicUrl(filePath);
-      
-      uploadedUrls.push(publicUrl);
     }
     return uploadedUrls;
   };
