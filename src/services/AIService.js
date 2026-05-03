@@ -13,7 +13,7 @@ export const AIService = {
   generatePost: async (product) => {
     const prompt = `
       Eres un experto en marketing para boutiques de ropa de segunda mano de alta calidad. 
-      Tu objetivo es crear una publicación atractiva, elegante y persuasiva para Facebook.
+      Tu objetivo es crear una publicación de Facebook DIRECTA y RESUMIDA.
       
       Información del producto:
       - Nombre: ${product.name}
@@ -22,16 +22,22 @@ export const AIService = {
       - Marca: ${product.brand || 'No especificada'}
       - Talla: ${product.size || 'No especificada'}
       - Condición: ${product.condition || 'Excelente'}
-      - Materiales: ${product.materials ? product.materials.join(', ') : 'No especificados'}
+      - Materiales: ${product.materials ? (Array.isArray(product.materials) ? product.materials.join(', ') : product.materials) : 'No especificados'}
       
-      Instrucciones:
-      1. Genera un TÍTULO llamativo que incluya emojis.
-      2. Genera una DESCRIPCIÓN elegante que resalte los beneficios de la prenda, incluya los detalles técnicos (talla, precio, marca, estado) y un llamado a la acción invitando a comprar en el catálogo web.
-      3. Mantén un tono real, sofisticado y cercano.
+      Instrucciones de formato (SÍGUELAS ESTRICTAMENTE):
+      1. GANCHO: Una frase corta y llamativa de máximo 10-12 palabras con emojis.
+      2. CARACTERÍSTICAS: Una lista de puntos clave (Talla, Marca, Estado, Precio) de forma muy limpia.
+      3. No uses párrafos largos. La gente quiere leer lo importante rápido.
       
       Formato de respuesta (ESTRICTO):
-      TITULO: [Aquí el título]
-      DESCRIPCION: [Aquí la descripción]
+      TITULO: [Aquí el título corto con emojis]
+      DESCRIPCION: [Gancho de ~10 palabras]
+
+      ✨ DETALLES:
+      • Talla: [Talla]
+      • Marca: [Marca]
+      • Estado: [Condición]
+      • Inversión: C$ [Precio]
     `;
 
     for (const model of MODELS) {
