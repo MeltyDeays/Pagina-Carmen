@@ -466,59 +466,69 @@ export default function AdminView() {
             )}
 
 
-            <div className="glass-panel" style={{ overflow: 'hidden' }}>
-              <div className="admin-table-header">
-                <span>VISTA</span>
-                <span>PRODUCTO</span>
-                <span>PRECIO</span>
-                <span style={{ textAlign: 'right' }}>ACCIONES</span>
-              </div>
-              
-              <div style={{ maxHeight: '600px', overflowY: 'auto' }}>
-                {admin.products.length === 0 ? (
-                  <div style={{ padding: '4rem', textAlign: 'center', color: 'var(--color-text-light)' }}>No hay productos registrados.</div>
-                ) : (
-                  admin.products.map(p => (
-                    <div key={p.id} className="admin-product-row">
-                      <div style={{ width: '50px', height: '50px', borderRadius: '8px', overflow: 'hidden', background: '#eee' }}>
-                        <img src={p.images?.[0] || 'https://placehold.co/50x50'} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              {admin.products.length === 0 ? (
+                <div className="glass-panel" style={{ padding: '3rem', textAlign: 'center', color: 'var(--color-text-light)' }}>
+                  No hay prendas registradas aún.
+                </div>
+              ) : (
+                admin.products.map((p, idx) => (
+                  <div key={p.id} className="glass-panel animate-fade-in" style={{ padding: '1rem', display: 'flex', gap: '1rem', alignItems: 'center', border: '1px solid rgba(103, 58, 183, 0.05)' }}>
+                    {/* Imagen Miniatura */}
+                    <div style={{ width: '70px', height: '70px', borderRadius: '12px', overflow: 'hidden', flexShrink: 0, backgroundColor: '#f0f0f0' }}>
+                      <img 
+                        src={p.images && p.images[0] ? p.images[0] : 'https://placehold.co/100x100?text=Sin+Foto'} 
+                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                        alt={p.name}
+                      />
+                    </div>
+
+                    {/* Información Central */}
+                    <div style={{ flexGrow: 1, minWidth: 0 }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.2rem' }}>
+                        <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: '700', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{p.name}</h4>
+                        <span style={{ fontWeight: '800', color: 'var(--color-primary-dark)', fontSize: '0.9rem' }}>C${p.price}</span>
                       </div>
-                      <div style={{ paddingLeft: '1rem' }}>
-                        <div style={{ fontWeight: '600', color: 'var(--color-text-heading)' }}>{p.name}</div>
-                        <div style={{ fontSize: '0.8rem', color: 'var(--color-text-light)' }}>{p.brand} • Talla {p.size || 'N/A'}</div>
-                        {p.sold_at && <span className="badge badge-danger" style={{ marginTop: '0.3rem', display: 'inline-block' }}>Vendido</span>}
-                        {!p.sold_at && !p.is_published && <span className="badge badge-warning" style={{ marginTop: '0.3rem', display: 'inline-block' }}>Borrador</span>}
-                        {!p.sold_at && p.is_published && <span className="badge badge-success" style={{ marginTop: '0.3rem', display: 'inline-block' }}>En Tienda</span>}
+                      <div style={{ fontSize: '0.75rem', color: 'var(--color-text-light)', marginBottom: '0.5rem' }}>
+                        {p.brand} • {p.categories?.name || 'Sin categoría'}
                       </div>
-                      <div style={{ fontWeight: '700', fontSize: '1.1rem' }}>C${p.price}</div>
-                      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem' }}>
-                        {!p.sold_at && !p.is_published && (
-                          <button 
-                            className="btn-outline" 
-                            style={{ padding: '0.5rem', borderRadius: '8px', color: 'var(--color-primary-dark)' }}
-                            title="Subir al Catálogo"
-                            onClick={() => admin.togglePublished(p.id, false)}
-                          >
-                            <ShoppingBag size={18} />
-                          </button>
+                      
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        {p.sold_at ? (
+                          <span className="badge badge-success" style={{ fontSize: '0.65rem' }}>Vendido</span>
+                        ) : p.is_published ? (
+                          <span className="badge badge-success" style={{ fontSize: '0.65rem', background: '#E8F5E9', color: '#2E7D32' }}>En Catálogo</span>
+                        ) : (
+                          <span className="badge badge-warning" style={{ fontSize: '0.65rem' }}>Borrador</span>
                         )}
-                        {!p.sold_at && p.is_published && (
-                          <button 
-                            className="btn-outline" 
-                            style={{ padding: '0.5rem', borderRadius: '8px', color: '#2E7D32' }}
-                            title="Marcar como Vendido"
-                            onClick={() => admin.handleMarkAsSold(p.id)}
-                          >
-                            <CheckCircle size={18} />
-                          </button>
-                        )}
-                        <button className="btn-outline" style={{ padding: '0.5rem', borderRadius: '8px' }} title="Editar" onClick={() => admin.startEditProduct(p)}><Eye size={18} /></button>
-                        <button className="btn-outline" style={{ padding: '0.5rem', borderRadius: '8px', color: '#C62828' }} title="Eliminar" onClick={() => admin.handleDeleteProduct(p.id)}><Trash2 size={18} /></button>
                       </div>
                     </div>
-                  ))
-                )}
-              </div>
+
+                    {/* Botones de Acción (Vertical en móvil para ahorrar ancho) */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', borderLeft: '1px solid #eee', paddingLeft: '0.8rem' }}>
+                      {!p.sold_at && (
+                        <>
+                          {!p.is_published ? (
+                            <button className="btn-outline" style={{ padding: '0.4rem', borderRadius: '8px', color: 'var(--color-primary)' }} onClick={() => admin.togglePublished(p.id, false)} title="Publicar">
+                              <ShoppingBag size={16} />
+                            </button>
+                          ) : (
+                            <button className="btn-outline" style={{ padding: '0.4rem', borderRadius: '8px', color: '#2E7D32' }} onClick={() => admin.handleMarkAsSold(p.id)} title="Marcar Vendido">
+                              <CheckCircle size={16} />
+                            </button>
+                          )}
+                        </>
+                      )}
+                      <button className="btn-outline" style={{ padding: '0.4rem', borderRadius: '8px' }} onClick={() => admin.startEditProduct(p)} title="Editar">
+                        <Eye size={16} />
+                      </button>
+                      <button className="btn-outline" style={{ padding: '0.4rem', borderRadius: '8px', color: '#C62828' }} onClick={() => admin.handleDeleteProduct(p.id)} title="Eliminar">
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
           </div>
         )}
