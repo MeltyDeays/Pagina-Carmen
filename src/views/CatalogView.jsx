@@ -24,10 +24,18 @@ export default function CatalogView() {
     if (urlProductId && products.length > 0) {
       const product = products.find(p => p.id === urlProductId);
       if (product) {
-        setSelectedProduct(product);
+        if (product.sold_at) {
+          alert("¡Lo sentimos! Este producto ya ha sido vendido. Te redirigimos al catálogo para que veas más tesoros. ✨");
+          navigate('/', { replace: true });
+        } else {
+          setSelectedProduct(product);
+        }
+      } else {
+        // Si el ID no existe en los productos cargados
+        navigate('/', { replace: true });
       }
     }
-  }, [urlProductId, products]);
+  }, [urlProductId, products, navigate]);
 
   const closeDetail = () => {
     setSelectedProduct(null);
