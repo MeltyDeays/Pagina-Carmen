@@ -77,13 +77,18 @@ export function useAdminController() {
         imageUrls = await uploadImages(selectedFiles);
       }
 
-      // 2. Preparar datos finales
+      // 2. Preparar datos limpios (solo columnas existentes en la BD)
       const data = {
-        ...productForm,
+        name: productForm.name,
+        description: productForm.description,
         price: parseFloat(productForm.price),
-        materials: productForm.materials ? productForm.materials.split(',').map(m => m.trim()) : [],
-        images: imageUrls.length > 0 ? imageUrls : [productForm.images], // Prioridad a subidas
-        category_id: productForm.category_id || null
+        brand: productForm.brand,
+        category_id: productForm.category_id || null,
+        condition: productForm.condition,
+        size: productForm.size,
+        materials: productForm.materials ? (typeof productForm.materials === 'string' ? productForm.materials.split(',').map(m => m.trim()) : productForm.materials) : [],
+        images: imageUrls.length > 0 ? imageUrls : (Array.isArray(productForm.images) ? productForm.images : [productForm.images]),
+        is_published: productForm.is_published
       };
 
       if (editingId) {
@@ -103,7 +108,25 @@ export function useAdminController() {
       setProductForm({ name: '', description: '', price: '', brand: '', category_id: '', materials: '', condition: '', size: '', images: [], is_published: false });
       loadData();
     } catch (err) {
-      alert('Error guardando producto. Revisa que el bucket "Imagenes-Ropa" sea público.');
+      alert(`Error al guardar: ${err.message || 'Error desconocido'}`);
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteProduct = async (id) => {
+    if (!id) return;
+    if (!window.confirm("¿Estás seguro de eliminar este producto?")) return;
+    try {
+      setLoading(true);
+      const success = await ProductModel.delete(id);
+      if (success) {
+        alert("Producto eliminado con éxito");
+        loadData();
+      }
+    } catch (err) {
+      alert(`Error al eliminar: ${err.message}`);
       console.error(err);
     } finally {
       setLoading(false);
@@ -112,51 +135,43 @@ export function useAdminController() {
 
   const startEditProduct = (product) => {
     setProductForm({
-      name: product.name,
-      description: product.description,
-      price: product.price,
-      brand: product.brand,
-      category_id: product.category_id,
+      name: product.name || '',
+      description: product.description || '',
+      price: product.price || '',
+      brand: product.brand || '',
+      category_id: product.category_id || '',
       materials: Array.isArray(product.materials) ? product.materials.join(', ') : '',
-      condition: product.condition,
-      size: product.size,
-      images: product.images,
-      is_published: product.is_published
+      condition: product.condition || '',
+      size: product.size || '',
+      images: product.images || [],
+      is_published: !!product.is_published
     });
     setEditingId(product.id);
     setShowProductForm(true);
-  };
-
-  const handleDeleteProduct = async (id) => {
-    if (!window.confirm("¿Estás seguro de eliminar este producto? Esta acción no se puede deshacer.")) return;
-    try {
-      setLoading(true);
-      await ProductModel.delete(id);
-      loadData();
-    } catch (err) {
-      alert("Error eliminando producto");
-    } finally {
-      setLoading(false);
-    }
   };
 
   const handleCategorySubmit = async (e) => {
     e.preventDefault();
     try {
       setLoading(true);
+      const data = {
+        name: categoryForm.name,
+        description: categoryForm.description
+      };
+
       if (editingCatId) {
-        await CategoryModel.update(editingCatId, categoryForm);
-        alert('Categoría actualizada');
+        await CategoryModel.update(editingCatId, data);
+        alert('¡Categoría actualizada con éxito!');
       } else {
-        await CategoryModel.create(categoryForm);
-        alert('Categoría agregada');
+        await CategoryModel.create(data);
+        alert('¡Categoría agregada con éxito!');
       }
       setShowCategoryForm(false);
       setEditingCatId(null);
       setCategoryForm({ name: '', description: '' });
       loadData();
     } catch (err) {
-      alert('Error guardando categoría.');
+      alert(`Error en categorías: ${err.message || 'Error desconocido'}`);
       console.error(err);
     } finally {
       setLoading(false);
