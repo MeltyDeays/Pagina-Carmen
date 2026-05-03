@@ -354,6 +354,22 @@ export default function AdminView() {
         {/* Inventory View */}
         {activeTab === 'products' && (
           <div className="animate-fade-in">
+            {/* Header de sección con botón de añadir */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+              <h2 style={{ fontSize: '1.2rem', fontWeight: '700' }}>Gestión de Inventario</h2>
+              <button 
+                className="btn-primary" 
+                style={{ padding: '0.6rem 1rem', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+                onClick={() => {
+                  admin.setEditingId(null);
+                  admin.setProductForm({ name: '', description: '', price: '', brand: '', category_id: '', materials: '', condition: '', size: '', images: [], is_published: false });
+                  admin.setShowProductForm(!admin.showProductForm);
+                }}
+              >
+                <Plus size={18} /> {admin.showProductForm ? 'Cerrar' : 'Nueva Prenda'}
+              </button>
+            </div>
+
             {admin.showProductForm && (
               <form className="glass-panel animate-fade-in" style={{ padding: '1.25rem', marginBottom: '2rem', border: '1px solid var(--color-primary)' }} onSubmit={admin.handleProductSubmit}>
                 <h3 style={{ marginBottom: '1rem', fontSize: '1.2rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
@@ -496,6 +512,22 @@ export default function AdminView() {
         {/* Categories View */}
         {activeTab === 'categories' && (
           <div className="animate-fade-in">
+            {/* Header de sección con botón de añadir */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+              <h2 style={{ fontSize: '1.2rem', fontWeight: '700' }}>Listado de Categorías</h2>
+              <button 
+                className="btn-primary" 
+                style={{ padding: '0.6rem 1rem', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+                onClick={() => {
+                  admin.setEditingCatId(null);
+                  admin.setCategoryForm({ name: '', description: '' });
+                  admin.setShowCategoryForm(!admin.showCategoryForm);
+                }}
+              >
+                <Plus size={18} /> {admin.showCategoryForm ? 'Cerrar' : 'Nueva Categoría'}
+              </button>
+            </div>
+
              {admin.showCategoryForm && (
               <form className="glass-panel animate-fade-in" style={{ padding: '1.5rem', marginBottom: '2rem', border: '1px solid var(--color-primary)' }} onSubmit={admin.handleCategorySubmit}>
                  <h3 style={{ marginBottom: '1rem', fontSize: '1.2rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
