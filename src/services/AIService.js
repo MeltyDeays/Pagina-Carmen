@@ -87,5 +87,69 @@ export const AIService = {
         }
       }
     }
+  },
+
+  polishText: async (name, description) => {
+    const prompt = `
+Eres un corrector de texto profesional para una tienda de ropa. Tu ÚNICA tarea es:
+1. Corregir faltas de ortografía
+2. Arreglar puntuación (comas, puntos, tildes)
+3. Mejorar la redacción para que suene profesional y limpia
+4. NO inventes información nueva. NO agregues detalles que no estén en el texto original.
+5. Si el texto ya está bien, devuélvelo igual.
+6. Mantén el texto CORTO y DIRECTO.
+
+Texto del nombre del producto:
+"${name}"
+
+Texto de la descripción del producto:
+"${description || ''}"
+
+Responde EXACTAMENTE en este formato (sin explicaciones adicionales):
+NOMBRE: [nombre corregido]
+DESCRIPCION: [descripción corregida]
+    `;
+
+    for (const model of MODELS) {
+      try {
+        const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${GROQ_API_KEY}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            model: model,
+            messages: [{ role: 'user', content: prompt }],
+            temperature: 0.2
+          })
+        });
+
+        if (response.status === 429) {
+          console.warn(`Model ${model} rate limited, trying next fallback...`);
+          continue;
+        }
+
+        if (!response.ok) {
+          throw new Error(`Groq API error: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        const content = data.choices[0].message.content;
+
+        const nameMatch = content.match(/NOMBRE:\s*(.*)/i);
+        const descMatch = content.match(/DESCRIPCION:\s*([\s\S]*)/i);
+
+        return {
+          name: nameMatch ? nameMatch[1].trim() : name,
+          description: descMatch ? descMatch[1].trim() : description
+        };
+      } catch (error) {
+        console.error(`Error with model ${model}:`, error);
+        if (model === MODELS[MODELS.length - 1]) {
+          throw error;
+        }
+      }
+    }
   }
 };

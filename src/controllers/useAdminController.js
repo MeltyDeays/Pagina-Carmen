@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { ProductModel } from '../models/ProductModel';
 import { CategoryModel } from '../models/CategoryModel';
+import { AIService } from '../services/AIService';
 
 export function useAdminController() {
   const [products, setProducts] = useState([]);
@@ -125,10 +126,26 @@ export function useAdminController() {
         imageUrls = await uploadImages(selectedFiles);
       }
 
-      // 2. Preparar datos limpios (solo columnas existentes en la BD)
+      // 2. Pulir nombre y descripción con IA (silencioso, en segundo plano)
+      let polishedName = productForm.name;
+      let polishedDesc = productForm.description;
+      try {
+        if (productForm.name || productForm.description) {
+          const polished = await AIService.polishText(productForm.name, productForm.description);
+          if (polished) {
+            polishedName = polished.name || productForm.name;
+            polishedDesc = polished.description || productForm.description;
+          }
+        }
+      } catch (aiErr) {
+        // Si la IA falla, usamos el texto original sin interrumpir
+        console.warn('IA no disponible, guardando texto original:', aiErr);
+      }
+
+      // 3. Preparar datos limpios (solo columnas existentes en la BD)
       const data = {
-        name: productForm.name,
-        description: productForm.description,
+        name: polishedName,
+        description: polishedDesc,
         price: parseFloat(productForm.price),
         brand: productForm.brand,
         category_id: productForm.category_id || null,
