@@ -21,7 +21,6 @@ export const ProductModel = {
 
   async markAsSold(id) {
     const { data, error } = await supabase.from('products').update({ 
-      is_available: false, 
       sold_at: new Date().toISOString() 
     }).eq('id', id).select();
     if (error) throw error;
@@ -33,5 +32,5 @@ export const ProductModel = {
     if (error) throw error;
     return true;
   },
-  supabase // Exportamos para que el controlador lo use para el storage
+  supabase
 };
