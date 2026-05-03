@@ -136,10 +136,32 @@ export default function AdminView() {
     }
   };
 
-  const copyToClipboard = (text, field) => {
-    navigator.clipboard.writeText(text);
-    setCopiedField(field);
-    setTimeout(() => setCopiedField(null), 2000);
+  const copyToClipboard = async (text, field) => {
+    if (!text) return;
+    try {
+      // Intentar usar la API moderna
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(text);
+        setCopiedField(field);
+        setTimeout(() => setCopiedField(null), 2000);
+      } else {
+        throw new Error('API no disponible');
+      }
+    } catch (err) {
+      // Fallback para navegadores antiguos o contextos no seguros
+      try {
+        const textArea = document.createElement("textarea");
+        textArea.value = text;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        setCopiedField(field);
+        setTimeout(() => setCopiedField(null), 2000);
+      } catch (fallbackErr) {
+        console.error('Error total al copiar:', fallbackErr);
+      }
+    }
   };
 
   const resetPostModal = () => {
@@ -890,7 +912,11 @@ export default function AdminView() {
       {showPostModal && (
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 5000, padding: '1rem' }}>
           <div className="glass-panel animate-scale-in" style={{ width: '100%', maxWidth: '550px', maxHeight: '90vh', overflowY: 'auto', padding: '1.5rem', background: 'white', position: 'relative' }}>
-            <button onClick={resetPostModal} style={{ position: 'absolute', top: '1rem', right: '1rem', background: 'none', border: 'none', cursor: 'pointer', color: '#666' }}>
+            <button 
+              type="button"
+              onClick={(e) => { e.preventDefault(); resetPostModal(); }} 
+              style={{ position: 'absolute', top: '1rem', right: '1rem', background: 'none', border: 'none', cursor: 'pointer', color: '#666' }}
+            >
               <X size={24} />
             </button>
 
@@ -941,7 +967,8 @@ export default function AdminView() {
               <>
                 <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
                   <button 
-                    onClick={() => { setSelectedProductForPost(null); setGeneratedContent(null); }}
+                    type="button"
+                    onClick={(e) => { e.preventDefault(); setSelectedProductForPost(null); setGeneratedContent(null); }}
                     style={{ background: 'none', border: 'none', color: 'var(--color-primary-dark)', fontWeight: '600', fontSize: '0.8rem', cursor: 'pointer', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.3rem', margin: '0 auto' }}
                   >
                     <ChevronRight size={14} style={{ transform: 'rotate(180deg)' }} /> Volver a la lista
@@ -961,7 +988,8 @@ export default function AdminView() {
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
                         <span style={{ fontSize: '0.75rem', fontWeight: '800', color: 'var(--color-primary-dark)', letterSpacing: '0.05em' }}>TÍTULO SUGERIDO</span>
                         <button 
-                          onClick={() => copyToClipboard(generatedContent.title, 'title')}
+                          type="button"
+                          onClick={(e) => { e.preventDefault(); copyToClipboard(generatedContent.title, 'title'); }}
                           style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', background: copiedField === 'title' ? '#E8F5E9' : '#f0f0f0', border: 'none', padding: '0.4rem 0.8rem', borderRadius: '8px', fontSize: '0.75rem', fontWeight: '600', cursor: 'pointer', color: copiedField === 'title' ? '#2E7D32' : '#333', transition: 'all 0.2s' }}
                         >
                           {copiedField === 'title' ? <Check size={14} /> : <Copy size={14} />}
@@ -978,7 +1006,8 @@ export default function AdminView() {
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
                         <span style={{ fontSize: '0.75rem', fontWeight: '800', color: 'var(--color-primary-dark)', letterSpacing: '0.05em' }}>DESCRIPCIÓN PARA FACEBOOK</span>
                         <button 
-                          onClick={() => copyToClipboard(generatedContent.description, 'desc')}
+                          type="button"
+                          onClick={(e) => { e.preventDefault(); copyToClipboard(generatedContent.description, 'desc'); }}
                           style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', background: copiedField === 'desc' ? '#E8F5E9' : '#f0f0f0', border: 'none', padding: '0.4rem 0.8rem', borderRadius: '8px', fontSize: '0.75rem', fontWeight: '600', cursor: 'pointer', color: copiedField === 'desc' ? '#2E7D32' : '#333', transition: 'all 0.2s' }}
                         >
                           {copiedField === 'desc' ? <Check size={14} /> : <Copy size={14} />}
@@ -992,8 +1021,9 @@ export default function AdminView() {
                     </div>
 
                     <button 
+                      type="button"
                       className="btn-primary" 
-                      onClick={() => handleGenerateAI(selectedProductForPost)}
+                      onClick={(e) => { e.preventDefault(); handleGenerateAI(selectedProductForPost); }}
                       style={{ padding: '0.8rem', background: '#f0f0f0', color: '#333', border: 'none', fontSize: '0.85rem', fontWeight: '600' }}
                     >
                       Regenerar con otro tono
