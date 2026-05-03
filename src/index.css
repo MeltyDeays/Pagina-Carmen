@@ -424,3 +424,68 @@ button {
   color: var(--color-text-heading);
   box-shadow: var(--shadow-sm);
 }
+
+/* Animación de Salto para el Carrito */
+@keyframes bump {
+  0% { transform: scale(1); }
+  30% { transform: scale(1.3); }
+  50% { transform: scale(0.9); }
+  100% { transform: scale(1); }
+}
+
+@keyframes cart-glow {
+  0% { box-shadow: 0 0 0px var(--color-primary); }
+  50% { box-shadow: 0 0 20px var(--color-primary-dark); }
+  100% { box-shadow: 0 0 0px var(--color-primary); }
+}
+
+.cart-bump {
+  animation: bump 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.cart-glow {
+  animation: cart-glow 0.6s ease-out;
+}
+
+/* Vuelo Parabólico Boutique */
+.flying-container {
+  position: fixed;
+  z-index: 9999;
+  pointer-events: none;
+  animation: flight-x 1.6s linear forwards;
+}
+
+.flying-icon-wrapper {
+  animation: flight-y 1.6s cubic-bezier(0.3, -0.5, 0.3, 1.5) forwards;
+  color: #C08261; /* Color Oro/Bronce de la tarjeta */
+}
+
+@keyframes flight-x {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(var(--dx)); }
+}
+
+@keyframes flight-y {
+  0% { transform: translateY(0) scale(1.5); opacity: 1; }
+  50% { transform: translateY(-250px) scale(1.2); opacity: 1; }
+  100% { transform: translateY(var(--dy)) scale(0.1); opacity: 0; }
+}
+
+.dotted-trail {
+  position: absolute;
+  height: 4px;
+  background-image: linear-gradient(to right, #C08261 40%, rgba(255,255,255,0) 0%);
+  background-size: 12px 1px;
+  background-repeat: repeat-x;
+  transform-origin: left center;
+  opacity: 0.6;
+  filter: drop-shadow(0 0 3px white);
+  width: 0;
+  animation: trail-grow 1.6s linear forwards;
+}
+
+@keyframes trail-grow {
+  0% { width: 0; opacity: 0; }
+  10% { opacity: 0.6; }
+  100% { width: var(--trail-width); opacity: 0.6; }
+}

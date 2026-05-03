@@ -13,7 +13,6 @@ export function useCartController() {
       }
       return [...prev, { ...product, quantity: 1 }];
     });
-    setIsCartOpen(true);
   };
 
   const removeFromCart = (productId) => {

@@ -63,7 +63,7 @@ export default function ProductCard({ product, onAddToCart, index = 0 }) {
                 background: 'linear-gradient(135deg, #E2C799, #C08261)', 
                 border: 'none'
               }}
-              onClick={() => onAddToCart(product)}
+              onClick={(e) => onAddToCart(product, e)}
               title="Añadir al carrito"
             >
               <ShoppingBag size={15} color="white" />

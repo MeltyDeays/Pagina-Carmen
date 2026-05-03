@@ -1,3 +1,4 @@
+import { useState, useEffect, useRef } from 'react';
 import { ShoppingBag, Search } from 'lucide-react';
 import { useCatalogController } from '../controllers/useCatalogController';
 import { useCartController } from '../controllers/useCartController';
@@ -8,15 +9,48 @@ import { TelegramService } from '../services/TelegramService';
 export default function CatalogView() {
   const { products, categories, loading, error, selectedCategory, setSelectedCategory, searchQuery, setSearchQuery } = useCatalogController();
   const cartController = useCartController();
+  const [isAnimating, setIsAnimating] = useState(false);
+  const [flyingItems, setFlyingItems] = useState([]);
+  const cartIconRef = useRef(null);
+
+  // Animación del carrito cuando cambia la cantidad de items
+  useEffect(() => {
+    if (cartController.cart.length === 0) return;
+    setIsAnimating(true);
+    const timer = setTimeout(() => setIsAnimating(false), 400);
+    return () => clearTimeout(timer);
+  }, [cartController.cart.length]);
+
+  const handleAddToCartWithAnimation = (product, e) => {
+    cartController.addToCart(product);
+    
+    if (!e) return;
+
+    const id = Date.now();
+    const startX = e.clientX - 15; // Centrar un poco el icono
+    const startY = e.clientY - 15;
+    
+    const cartRect = cartIconRef.current.getBoundingClientRect();
+    const endX = cartRect.left + cartRect.width / 2;
+    const endY = cartRect.top + cartRect.height / 2;
+
+    // Fase 1: Iniciar el vuelo
+    setFlyingItems(prev => [...prev, { id, startX, startY, endX, endY }]);
+
+    // Fase 2: Limpiar después de que termine la animación (1.6s)
+    setTimeout(() => {
+      setFlyingItems(prev => prev.filter(item => item.id !== id));
+    }, 1700);
+  };
 
   const handleCheckout = async (whatsapp) => {
     const success = await TelegramService.sendOrder(cartController.cart, cartController.totalAmount, whatsapp);
     if (success) {
-      alert('¡Pedido enviado exitosamente! Nos contactaremos contigo por WhatsApp pronto.');
+      alert('¡Cotización enviada exitosamente! Nos contactaremos contigo por WhatsApp pronto.');
       cartController.setCart([]);
       cartController.setIsCartOpen(false);
     } else {
-      alert('Hubo un error enviando tu pedido. Por favor intenta de nuevo.');
+      alert('Hubo un error enviando tu cotización. Por favor intenta de nuevo.');
     }
   };
 
@@ -30,10 +64,21 @@ export default function CatalogView() {
           </h1>
           
           <button 
+            ref={cartIconRef}
             onClick={cartController.toggleCart}
-            style={{ position: 'relative', background: 'none', color: 'var(--color-text-main)', transition: 'transform 0.2s ease' }}
-            onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
-            onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
+            className={isAnimating ? 'cart-bump' : ''}
+            style={{ 
+              position: 'relative', 
+              background: 'none', 
+              color: 'var(--color-text-main)', 
+              transition: 'transform 0.2s ease',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '8px',
+              borderRadius: '50%',
+              backgroundColor: isAnimating ? 'rgba(209, 196, 233, 0.2)' : 'transparent'
+            }}
           >
             <ShoppingBag size={28} />
             {cartController.cart.length > 0 && (
@@ -147,7 +192,7 @@ export default function CatalogView() {
               <ProductCard 
                 key={product.id} 
                 product={product} 
-                onAddToCart={cartController.addToCart} 
+                onAddToCart={handleAddToCartWithAnimation} 
                 index={index}
               />
             ))}
@@ -159,6 +204,36 @@ export default function CatalogView() {
           </div>
         )}
       </main>
+
+      {/* Flying Items Overlay (Parábola Real) */}
+      {flyingItems.map(item => (
+        <div 
+          key={item.id} 
+          className="flying-container" 
+          style={{
+            left: item.startX,
+            top: item.startY,
+            '--dx': `${item.endX - item.startX}px`,
+            '--dy': `${item.endY - item.startY}px`
+          }}
+        >
+          <div className="flying-icon-wrapper">
+            {/* Estela punteada animada */}
+            <div className="dotted-trail" style={{
+              '--trail-width': `${Math.sqrt(Math.pow(item.endX - item.startX, 2) + Math.pow(item.endY - item.startY, 2))}px`,
+              transform: `rotate(${Math.atan2(item.endY - item.startY, item.endX - item.startX)}rad)`,
+              left: '12px',
+              top: '12px',
+            }} />
+            
+            <div style={{ position: 'relative' }}>
+              <ShoppingBag size={34} fill="#C08261" color="white" strokeWidth={2.5} />
+              {/* Resplandor Boutique */}
+              <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, boxShadow: '0 0 20px rgba(192, 130, 97, 0.4)', borderRadius: '50%' }} />
+            </div>
+          </div>
+        </div>
+      ))}
 
       <CartModal 
         {...cartController}

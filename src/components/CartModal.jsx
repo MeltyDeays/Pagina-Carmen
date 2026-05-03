@@ -87,7 +87,7 @@ export default function CartModal({ cart, isCartOpen, toggleCart, removeFromCart
                   onCheckout(whatsapp);
                 }}
               >
-                <Send size={18} /> Solicitar Pedido por WhatsApp
+                <Send size={18} /> Solicitar Cotización por WhatsApp
               </button>
             </div>
           </div>

@@ -9,12 +9,12 @@ export const TelegramService = {
       return true;
     }
 
-    let message = `🛒 *NUEVO PEDIDO*\n\n`;
+    let message = `📝 *NUEVA COTIZACIÓN*\n\n`;
     message += `📱 *Cliente WhatsApp:* ${customerWhatsapp}\n\n`;
     message += `🛍️ *Artículos:*\n`;
     
     cart.forEach(item => {
-      message += `- ${item.quantity}x ${item.name} (C$${item.price})\n`;
+      message += `- ${item.name} (C$${item.price})\n`;
     });
 
     message += `\n💰 *Total:* C$${totalAmount.toFixed(2)}`;
