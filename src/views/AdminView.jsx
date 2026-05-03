@@ -390,7 +390,7 @@ export default function AdminView() {
 
         {/* Dashboard View - BENTO GRID */}
         {activeTab === 'dashboard' && (
-          <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+          <div className="fade-enter" style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
             
             {/* Seccion 1: Resumen de Stock Maestras */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '0.75rem' }}>
@@ -483,7 +483,7 @@ export default function AdminView() {
 
         {/* Inventory View */}
         {activeTab === 'products' && (
-          <div className="animate-fade-in">
+          <div className="fade-enter">
             {/* Header de sección con botón de añadir */}
             <div style={{ 
               display: 'flex', 
@@ -740,7 +740,7 @@ export default function AdminView() {
 
         {/* Categories View */}
         {activeTab === 'categories' && (
-          <div className="animate-fade-in">
+          <div className="fade-enter">
             {/* Header de sección con botón de añadir */}
             <div style={{ 
               display: 'flex', 
@@ -869,7 +869,7 @@ export default function AdminView() {
 
         {/* Sold Items View */}
         {activeTab === 'sold' && (
-          <div className="animate-fade-in">
+          <div className="fade-enter">
             <div style={{ marginBottom: '1.5rem' }}>
               <h2 style={{ fontSize: '1rem', fontWeight: '700', margin: 0, opacity: 0.8 }}>Prendas Vendidas</h2>
               <p style={{ fontSize: '0.8rem', color: 'var(--color-text-light)' }}>Histórico de todas las ventas realizadas.</p>
@@ -988,7 +988,7 @@ export default function AdminView() {
                     <p style={{ fontStyle: 'italic', color: '#666' }}>La IA está redactando algo espectacular para <strong>{selectedProductForPost.name}</strong>...</p>
                   </div>
                 ) : generatedContent && (
-                  <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                  <div className="fade-enter" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                     {/* Título Section */}
                     <div>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
