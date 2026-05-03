@@ -2,6 +2,7 @@ import { useState, useRef } from 'react';
 import { Package, Tag, LogOut, Plus, Search, DollarSign, LayoutDashboard, ShoppingBag, Eye, Trash2, CheckCircle, X, Sparkles, Copy, Check, ChevronRight } from 'lucide-react';
 import { useAdminController } from '../controllers/useAdminController';
 import { AIService } from '../services/AIService';
+import { ErrorBoundary } from '../components/ErrorBoundary';
 
 export default function AdminView() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -287,6 +288,7 @@ export default function AdminView() {
 
       {/* Main Content */}
       <main className="admin-main">
+        <ErrorBoundary>
         {/* Header Superior Premium */}
         <div className="glass-panel" style={{ 
           display: 'flex', 
@@ -911,7 +913,7 @@ export default function AdminView() {
             </div>
           </div>
         )}
-
+        </ErrorBoundary>
       </main>
 
       {/* AI POST MODAL */}
