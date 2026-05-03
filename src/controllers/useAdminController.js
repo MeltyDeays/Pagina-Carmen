@@ -22,6 +22,11 @@ export function useAdminController() {
   // Control de edición
   const [editingId, setEditingId] = useState(null);
   const [editingCatId, setEditingCatId] = useState(null);
+  const [categoryFilter, setCategoryFilter] = useState(null);
+
+  const filteredProducts = categoryFilter 
+    ? products.filter(p => p.category_id === categoryFilter)
+    : products;
 
   useEffect(() => {
     loadData();
@@ -274,6 +279,7 @@ export function useAdminController() {
     handleDeleteProduct, handleDeleteCategory,
     startEditProduct, startEditCategory,
     togglePublished,
-    editingId, setEditingId, editingCatId, setEditingCatId
+    editingId, setEditingId, editingCatId, setEditingCatId,
+    categoryFilter, setCategoryFilter, filteredProducts
   };
 }

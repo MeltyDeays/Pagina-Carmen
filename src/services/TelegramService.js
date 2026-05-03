@@ -14,7 +14,8 @@ export const TelegramService = {
     message += `🛍️ *Artículos:*\n`;
     
     cart.forEach(item => {
-      message += `- ${item.name} (C$${item.price})\n`;
+      const sizeInfo = item.size ? ` (Talla: ${item.size})` : '';
+      message += `- ${item.name}${sizeInfo} - C$${item.price}\n`;
     });
 
     message += `\n💰 *Total:* C$${totalAmount.toFixed(2)}`;

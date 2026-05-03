@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { ShoppingBag, Search } from 'lucide-react';
+import { ShoppingBag, Search, CheckCircle } from 'lucide-react';
 import { useCatalogController } from '../controllers/useCatalogController';
 import { useCartController } from '../controllers/useCartController';
 import ProductCard from '../components/ProductCard';
@@ -11,6 +11,7 @@ export default function CatalogView() {
   const cartController = useCartController();
   const [isAnimating, setIsAnimating] = useState(false);
   const [flyingItems, setFlyingItems] = useState([]);
+  const [showSuccess, setShowSuccess] = useState(false);
   const cartIconRef = useRef(null);
 
   // Animación del carrito cuando cambia la cantidad de items
@@ -46,9 +47,11 @@ export default function CatalogView() {
   const handleCheckout = async (whatsapp) => {
     const success = await TelegramService.sendOrder(cartController.cart, cartController.totalAmount, whatsapp);
     if (success) {
-      alert('¡Cotización enviada exitosamente! Nos contactaremos contigo por WhatsApp pronto.');
+      setShowSuccess(true);
       cartController.setCart([]);
       cartController.setIsCartOpen(false);
+      // Auto-cerrar notificación después de 5 segundos
+      setTimeout(() => setShowSuccess(false), 5000);
     } else {
       alert('Hubo un error enviando tu cotización. Por favor intenta de nuevo.');
     }
@@ -239,6 +242,60 @@ export default function CatalogView() {
         {...cartController}
         onCheckout={handleCheckout}
       />
+
+      {/* Notificación de Éxito Premium (Telegram / WhatsApp) */}
+      {showSuccess && (
+        <div style={{
+          position: 'fixed',
+          top: '20px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          zIndex: 9999,
+          width: '90%',
+          maxWidth: '400px',
+          animation: 'fadeIn 0.5s ease'
+        }}>
+          <div className="glass-panel" style={{
+            padding: '1.5rem',
+            background: 'white',
+            border: '2px solid var(--color-primary)',
+            boxShadow: '0 20px 40px rgba(103, 58, 183, 0.15)',
+            textAlign: 'center'
+          }}>
+            <div style={{ 
+              width: '60px', 
+              height: '60px', 
+              background: '#E8F5E9', 
+              color: '#2E7D32', 
+              borderRadius: '50%', 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'center',
+              margin: '0 auto 1rem'
+            }}>
+              <CheckCircle size={32} />
+            </div>
+            <h3 style={{ margin: '0 0 0.5rem 0', color: 'var(--color-text-heading)' }}>¡Solicitud Enviada!</h3>
+            <p style={{ margin: 0, fontSize: '0.9rem', color: 'var(--color-text-light)', lineHeight: '1.4' }}>
+              Tu selección ha volado a nuestro sistema. Nos pondremos en contacto contigo por WhatsApp muy pronto. ✨
+            </p>
+            <button 
+              onClick={() => setShowSuccess(false)}
+              style={{ 
+                marginTop: '1.2rem', 
+                padding: '0.5rem 1.5rem', 
+                background: 'var(--color-primary)', 
+                color: 'white',
+                borderRadius: 'var(--radius-pill)',
+                fontSize: '0.85rem',
+                fontWeight: '600'
+              }}
+            >
+              Entendido
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

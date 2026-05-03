@@ -42,7 +42,11 @@ export default function CartModal({ cart, isCartOpen, toggleCart, removeFromCart
               <div key={item.id} className={`animate-fade-in delay-${(index % 6) + 1}`} style={{ display: 'flex', marginBottom: '1.2rem', alignItems: 'center', gap: '1rem', padding: '0.5rem', borderRadius: '12px', background: 'rgba(255,255,255,0.4)', border: '1px solid rgba(255,255,255,0.8)' }}>
                 <img src={item.images?.[0] || 'https://placehold.co/100x100'} alt={item.name} style={{ width: '70px', height: '70px', borderRadius: '8px', objectFit: 'cover', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }} />
                 <div style={{ flexGrow: 1 }}>
-                  <h4 style={{ margin: '0 0 0.2rem 0', fontSize: '1rem', color: 'var(--color-text-heading)' }}>{item.name}</h4>
+                  <h4 style={{ margin: '0 0 0.1rem 0', fontSize: '1rem', color: 'var(--color-text-heading)' }}>{item.name}</h4>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--color-text-light)', marginBottom: '0.3rem' }}>
+                    {item.brand && <span>{item.brand} • </span>}
+                    {item.size && <span style={{ fontWeight: '600' }}>Talla: {item.size}</span>}
+                  </div>
                   <span style={{ color: 'var(--color-primary-dark)', fontWeight: 'bold' }}>C${item.price}</span>
                 </div>
                 <button 

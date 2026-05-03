@@ -62,10 +62,11 @@ export default function AdminView() {
 
   const handleLogin = (e) => {
     e.preventDefault();
-    if (phone === '58438412') { 
+    const authorizedNumbers = ['84012444', '85427414', '58438412'];
+    if (authorizedNumbers.includes(phone)) { 
       setIsAuthenticated(true);
     } else {
-      alert('Número no autorizado');
+      alert('Acceso Denegado: Número no registrado en el sistema.');
     }
   };
 
@@ -138,128 +139,157 @@ export default function AdminView() {
           />
         )}
         
-        {activeTab === 'dashboard' && (
-          <>
-            <div style={{ 
-              position: 'fixed', 
-              left: fabPos.x + 25, 
-              top: fabPos.y, 
-              display: 'flex', 
-              flexDirection: 'column-reverse', 
-              gap: '0.75rem', 
-              zIndex: 1002,
-              transition: 'all 0.3s ease',
-              transform: isMenuOpen ? 'translate(-100%, -100%) translateY(-15px)' : 'translate(-100%, 0)',
-              opacity: isMenuOpen ? 1 : 0,
-              pointerEvents: isMenuOpen ? 'all' : 'none'
-            }}>
-              {[
-                { id: 'dashboard', label: 'Resumen', icon: LayoutDashboard },
-                { id: 'products', label: 'Inventario', icon: Package },
-                { id: 'categories', label: 'Categorías', icon: Tag }
-              ].map(item => (
-                <button 
-                  key={item.id}
-                  onClick={() => { setActiveTab(item.id); setIsMenuOpen(false); }}
-                  style={{ 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    gap: '0.5rem', 
-                    padding: '0.6rem 1rem', 
-                    borderRadius: 'var(--radius-pill)', 
-                    background: activeTab === item.id ? 'var(--color-primary)' : 'white',
-                    color: 'var(--color-text-heading)',
-                    border: 'none',
-                    boxShadow: 'var(--shadow-md)',
-                    fontWeight: '600',
-                    whiteSpace: 'nowrap',
-                    fontSize: '0.85rem'
-                  }}
-                >
-                  <item.icon size={16} /> {item.label}
-                </button>
-              ))}
-            </div>
+        <>
+          <div style={{ 
+            position: 'fixed', 
+            left: fabPos.x + 25, 
+            top: fabPos.y, 
+            display: 'flex', 
+            flexDirection: 'column-reverse', 
+            gap: '0.75rem', 
+            zIndex: 1002,
+            transition: 'all 0.3s ease',
+            transform: isMenuOpen ? 'translate(-100%, -100%) translateY(-15px)' : 'translate(-100%, 0)',
+            opacity: isMenuOpen ? 1 : 0,
+            pointerEvents: isMenuOpen ? 'all' : 'none'
+          }}>
+            {[
+              { id: 'dashboard', label: 'Resumen', icon: LayoutDashboard },
+              { id: 'products', label: 'Inventario', icon: Package },
+              { id: 'categories', label: 'Categorías', icon: Tag }
+            ].map(item => (
+              <button 
+                key={item.id}
+                onClick={() => { setActiveTab(item.id); setIsMenuOpen(false); }}
+                style={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  gap: '0.5rem', 
+                  padding: '0.6rem 1rem', 
+                  borderRadius: 'var(--radius-pill)', 
+                  background: activeTab === item.id ? 'var(--color-primary)' : 'white',
+                  color: 'var(--color-text-heading)',
+                  border: 'none',
+                  boxShadow: 'var(--shadow-md)',
+                  fontWeight: '600',
+                  whiteSpace: 'nowrap',
+                  fontSize: '0.85rem'
+                }}
+              >
+                <item.icon size={16} /> {item.label}
+              </button>
+            ))}
+          </div>
 
-            <button 
-              onPointerDown={handlePointerDown}
-              onPointerMove={handlePointerMove}
-              onClick={toggleMenu}
-              style={{ 
-                position: 'fixed', 
-                left: `${fabPos.x}px`,
-                top: `${fabPos.y}px`,
-                width: '50px', 
-                height: '50px', 
-                borderRadius: '50%', 
-                background: 'var(--color-primary-dark)', 
-                color: 'white', 
-                border: 'none', 
-                display: 'flex', 
-                alignItems: 'center', 
-                justifyContent: 'center', 
-                boxShadow: '0 8px 24px rgba(103, 58, 183, 0.3)', 
-                zIndex: 1003,
-                touchAction: 'none',
-                cursor: isDragging ? 'grabbing' : 'grab',
-                transition: isDragging ? 'none' : 'transform 0.3s ease, left 0.3s ease, top 0.3s ease'
-              }}
-            >
-              {isMenuOpen ? <Plus size={24} style={{ transform: 'rotate(45deg)' }} /> : <LayoutDashboard size={24} />}
-            </button>
-          </>
-        )}
+          <button 
+            onPointerDown={handlePointerDown}
+            onPointerMove={handlePointerMove}
+            onClick={toggleMenu}
+            style={{ 
+              position: 'fixed', 
+              left: `${fabPos.x}px`,
+              top: `${fabPos.y}px`,
+              width: '50px', 
+              height: '50px', 
+              borderRadius: '50%', 
+              background: 'var(--color-primary-dark)', 
+              color: 'white', 
+              border: 'none', 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'center', 
+              boxShadow: '0 8px 24px rgba(103, 58, 183, 0.3)', 
+              zIndex: 1003,
+              touchAction: 'none',
+              cursor: isDragging ? 'grabbing' : 'grab',
+              transition: isDragging ? 'none' : 'transform 0.3s ease, left 0.3s ease, top 0.3s ease'
+            }}
+          >
+            {isMenuOpen ? <Plus size={24} style={{ transform: 'rotate(45deg)' }} /> : <LayoutDashboard size={24} />}
+          </button>
+        </>
       </div>
 
       {/* Main Content */}
       <main className="admin-main">
-        {/* Header Superior */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '2rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            {activeTab !== 'dashboard' && (
-              <button onClick={() => setActiveTab('dashboard')} className="btn-outline show-mobile-only" style={{ padding: '0.5rem', borderRadius: '50%', background: 'white' }}>
-                <LayoutDashboard size={18} />
-              </button>
-            )}
-            <div>
-              <h1 style={{ margin: 0, fontSize: '1.8rem', color: 'var(--color-primary-dark)', cursor: 'pointer' }} onClick={() => {
-                  if(activeTab === 'products') {
-                    admin.setEditingId(null);
-                    admin.setProductForm({ name: '', description: '', price: '', brand: '', category_id: '', materials: '', condition: '', size: '', images: [], is_published: false });
-                    admin.setShowProductForm(!admin.showProductForm);
-                  }
-                  if(activeTab === 'categories') {
-                    admin.setEditingCatId(null);
-                    admin.setCategoryForm({ name: '', description: '' });
-                    admin.setShowCategoryForm(!admin.showCategoryForm);
-                  }
-                }}>
-                {activeTab === 'dashboard' && "Panel de Inteligencia"}
+        {/* Header Superior Premium */}
+        <div className="glass-panel" style={{ 
+          display: 'flex', 
+          justifyContent: 'space-between', 
+          alignItems: 'center', 
+          marginBottom: '1.5rem',
+          padding: '1rem 1.25rem',
+          border: 'none',
+          background: 'linear-gradient(135deg, rgba(255,255,255,0.95), rgba(209, 196, 233, 0.1))'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
+            <div 
+              onClick={() => setActiveTab('dashboard')}
+              style={{ 
+                background: 'var(--color-primary)', 
+                width: '40px', 
+                height: '40px', 
+                borderRadius: '12px', 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center',
+                cursor: 'pointer',
+                boxShadow: 'var(--shadow-sm)'
+              }}
+            >
+               <LayoutDashboard size={20} color="var(--color-text-heading)" />
+            </div>
+            <div 
+              style={{ cursor: 'pointer' }}
+              onClick={() => {
+                if(activeTab === 'products') {
+                  admin.setEditingId(null);
+                  admin.setProductForm({ name: '', description: '', price: '', brand: '', category_id: '', materials: '', condition: '', size: '', images: [], is_published: false });
+                  if (!admin.showProductForm) setActiveTab('dashboard');
+                } else if(activeTab === 'categories') {
+                  admin.setEditingCatId(null);
+                  admin.setCategoryForm({ name: '', description: '' });
+                  if (!admin.showCategoryForm) setActiveTab('dashboard');
+                } else {
+                  setActiveTab('dashboard');
+                }
+              }}
+            >
+              <h1 style={{ 
+                margin: 0, 
+                fontSize: '1.4rem', 
+                color: 'var(--color-text-heading)',
+                fontFamily: 'var(--font-heading)',
+                lineHeight: 1.2
+              }}>
+                {activeTab === 'dashboard' && "Panel Maestro"}
                 {activeTab === 'products' && "Inventario"}
-                {activeTab === 'categories' && "Categorías"}
+                {activeTab === 'categories' && "Colecciones"}
               </h1>
-              <p style={{ color: 'var(--color-text-light)', fontSize: '0.85rem' }}>Carmen Boutique • Chontales</p>
+              <p style={{ color: 'var(--color-text-light)', fontSize: '0.75rem', fontWeight: '500', margin: 0 }}>
+                Carmen Boutique
+              </p>
             </div>
           </div>
           
-          <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-            <button
-              onClick={() => setIsAuthenticated(false)}
-              className="btn-outline"
-              style={{ 
-                display: 'flex', 
-                alignItems: 'center', 
-                gap: '0.4rem', 
-                padding: '0.5rem 0.8rem', 
-                color: '#dc3545', 
-                border: '1px solid #ffccd5', 
-                background: 'white',
-                fontSize: '0.85rem'
-              }}
-            >
-              <LogOut size={16} /> <span className="hide-mobile">Salir</span>
-            </button>
-          </div>
+          <button
+            onClick={() => setIsAuthenticated(false)}
+            className="btn-outline"
+            style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: '0.4rem', 
+              padding: '0.5rem 0.8rem', 
+              color: '#C62828', 
+              borderColor: 'rgba(198, 40, 40, 0.15)',
+              background: 'white',
+              fontSize: '0.8rem',
+              fontWeight: '600',
+              borderRadius: '10px'
+            }}
+          >
+            <LogOut size={16} /> <span className="hide-mobile">Salir</span>
+          </button>
         </div>
 
         {/* Dashboard View - BENTO GRID */}
@@ -355,8 +385,15 @@ export default function AdminView() {
         {activeTab === 'products' && (
           <div className="animate-fade-in">
             {/* Header de sección con botón de añadir */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-              <h2 style={{ fontSize: '1.2rem', fontWeight: '700' }}>Gestión de Inventario</h2>
+            <div style={{ 
+              display: 'flex', 
+              justifyContent: 'space-between', 
+              alignItems: 'center', 
+              marginBottom: '1rem',
+              paddingBottom: '0.5rem',
+              borderBottom: '1px solid rgba(103, 58, 183, 0.08)'
+            }}>
+              <h2 style={{ fontSize: '1rem', fontWeight: '700', margin: 0, opacity: 0.8 }}>Stock de Inventario</h2>
               <button 
                 className="btn-primary" 
                 style={{ 
@@ -383,6 +420,32 @@ export default function AdminView() {
                 <Plus size={18} /> {admin.showProductForm ? 'Cerrar Panel' : 'Añadir Prenda'}
               </button>
             </div>
+
+            {/* Selector de Filtro de Categoría */}
+            {!admin.showProductForm && (
+              <div style={{ marginBottom: '1.2rem', display: 'flex', alignItems: 'center', gap: '0.8rem', background: 'rgba(103, 58, 183, 0.03)', padding: '0.6rem', borderRadius: '12px' }}>
+                <span style={{ fontSize: '0.75rem', fontWeight: '700', color: 'var(--color-text-light)' }}>Filtrar por:</span>
+                <select 
+                  className="input-field" 
+                  style={{ padding: '0.4rem 0.6rem', fontSize: '0.8rem', width: 'auto', background: 'white' }}
+                  value={admin.categoryFilter || ''}
+                  onChange={(e) => admin.setCategoryFilter(e.target.value || null)}
+                >
+                  <option value="">Todas las categorías</option>
+                  {admin.categories.map(c => (
+                    <option key={c.id} value={c.id}>{c.name}</option>
+                  ))}
+                </select>
+                {admin.categoryFilter && (
+                  <button 
+                    onClick={() => admin.setCategoryFilter(null)}
+                    style={{ fontSize: '0.7rem', color: 'var(--color-primary-dark)', background: 'none', border: 'none', textDecoration: 'underline', cursor: 'pointer' }}
+                  >
+                    Limpiar
+                  </button>
+                )}
+              </div>
+            )}
 
             {admin.showProductForm && (
               <form className="glass-panel animate-fade-in" style={{ padding: '1.25rem', marginBottom: '2rem', border: '1px solid var(--color-primary)' }} onSubmit={admin.handleProductSubmit}>
@@ -421,8 +484,20 @@ export default function AdminView() {
                     <input className="input-field" style={{ padding: '0.6rem 0.8rem' }} placeholder="S, M, L..." value={admin.productForm.size} onChange={e => admin.setProductForm({ ...admin.productForm, size: e.target.value })} />
                   </div>
                   <div style={{ gridColumn: 'span 4' }}>
-                    <label style={{ fontSize: '0.75rem', fontWeight: '700', marginBottom: '0.2rem', display: 'block', color: 'var(--color-text-light)' }}>Condición</label>
-                    <input className="input-field" style={{ padding: '0.6rem 0.8rem' }} placeholder="Como nueva, usada..." value={admin.productForm.condition} onChange={e => admin.setProductForm({ ...admin.productForm, condition: e.target.value })} />
+                    <label style={{ fontSize: '0.75rem', fontWeight: '700', marginBottom: '0.2rem', display: 'block', color: 'var(--color-text-light)' }}>Condición de la Prenda</label>
+                    <select 
+                      className="input-field" 
+                      style={{ padding: '0.6rem 0.8rem' }} 
+                      value={admin.productForm.condition} 
+                      onChange={e => admin.setProductForm({ ...admin.productForm, condition: e.target.value })}
+                      required
+                    >
+                      <option value="">Seleccione condición...</option>
+                      <option value="Nuevo con Etiqueta">Nuevo con Etiqueta ✨</option>
+                      <option value="Como Nuevo">Como Nuevo (Semicuero/Seda) 👌</option>
+                      <option value="Excelente Estado">Excelente Estado ⭐</option>
+                      <option value="Buen Estado">Buen Estado ✅</option>
+                    </select>
                   </div>
 
                   {/* Fila 4: Fotos */}
@@ -467,12 +542,12 @@ export default function AdminView() {
 
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              {admin.products.length === 0 ? (
+              {admin.filteredProducts.length === 0 ? (
                 <div className="glass-panel" style={{ padding: '3rem', textAlign: 'center', color: 'var(--color-text-light)' }}>
-                  No hay prendas registradas aún.
+                  No hay prendas que coincidan con el filtro.
                 </div>
               ) : (
-                admin.products.map((p, idx) => (
+                admin.filteredProducts.map((p, idx) => (
                   <div key={p.id} className="glass-panel animate-fade-in" style={{ padding: '1rem', display: 'flex', gap: '1rem', alignItems: 'center', border: '1px solid rgba(103, 58, 183, 0.05)' }}>
                     {/* Imagen Miniatura */}
                     <div style={{ width: '70px', height: '70px', borderRadius: '12px', overflow: 'hidden', flexShrink: 0, backgroundColor: '#f0f0f0' }}>
@@ -537,8 +612,15 @@ export default function AdminView() {
         {activeTab === 'categories' && (
           <div className="animate-fade-in">
             {/* Header de sección con botón de añadir */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-              <h2 style={{ fontSize: '1.2rem', fontWeight: '700' }}>Listado de Categorías</h2>
+            <div style={{ 
+              display: 'flex', 
+              justifyContent: 'space-between', 
+              alignItems: 'center', 
+              marginBottom: '1rem',
+              paddingBottom: '0.5rem',
+              borderBottom: '1px solid rgba(103, 58, 183, 0.08)'
+            }}>
+              <h2 style={{ fontSize: '1rem', fontWeight: '700', margin: 0, opacity: 0.8 }}>Gestión de Colecciones</h2>
               <button 
                 className="btn-primary" 
                 style={{ 
@@ -619,7 +701,29 @@ export default function AdminView() {
                           
                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '1rem', borderTop: '1px solid rgba(0,0,0,0.05)' }}>
                              <span style={{ fontSize: '0.8rem', fontWeight: '600', color: 'var(--color-text-light)' }}>PRODUCTOS</span>
-                             <span className="badge badge-success" style={{ fontSize: '0.9rem', padding: '0.2rem 0.8rem' }}>{count}</span>
+                             <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
+                                {count > 0 && (
+                                  <button 
+                                    onClick={() => {
+                                      admin.setCategoryFilter(c.id);
+                                      setActiveTab('products');
+                                    }}
+                                    style={{ 
+                                      background: 'rgba(103, 58, 183, 0.05)', 
+                                      border: 'none', 
+                                      color: 'var(--color-primary-dark)', 
+                                      fontSize: '0.75rem', 
+                                      fontWeight: '700', 
+                                      padding: '0.3rem 0.6rem', 
+                                      borderRadius: '8px',
+                                      cursor: 'pointer'
+                                    }}
+                                  >
+                                    Ver Stock
+                                  </button>
+                                )}
+                                <span className="badge badge-success" style={{ fontSize: '0.9rem', padding: '0.2rem 0.8rem' }}>{count}</span>
+                             </div>
                           </div>
                         </div>
 
