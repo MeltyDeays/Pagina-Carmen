@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef } from 'react';
 import { Package, Tag, LogOut, Plus, Search, DollarSign, LayoutDashboard, ShoppingBag, Eye, Trash2, CheckCircle, X, Sparkles, Copy, Check, ChevronRight } from 'lucide-react';
 import { useAdminController } from '../controllers/useAdminController';
 import { AIService } from '../services/AIService';
@@ -121,7 +121,7 @@ export default function AdminView() {
   const soldCount = admin.products.filter(p => p.sold_at).length;
   const availableCount = admin.products.length - soldCount;
 
-  const handleGenerateAI = useCallback(async (product) => {
+  const handleGenerateAI = async (product) => {
     setSelectedProductForPost(product);
     setIsGenerating(true);
     setGeneratedContent(null);
@@ -134,56 +134,48 @@ export default function AdminView() {
     } finally {
       setIsGenerating(false);
     }
-  }, []);
+  };
 
-  const copyToClipboard = useCallback((text, field) => {
+  const copyToClipboard = (text, field) => {
     if (!text) return;
-    
-    // Método ultra-robusto: Crear un elemento temporal
-    const textArea = document.createElement("textarea");
-    textArea.value = text;
-    
-    // Asegurar que sea invisible pero funcional
-    textArea.style.position = "fixed";
-    textArea.style.left = "-9999px";
-    textArea.style.top = "0";
-    textArea.setAttribute("readonly", ""); // Para iOS
-    document.body.appendChild(textArea);
-    
-    textArea.select();
-    textArea.setSelectionRange(0, 99999); // Para móviles
-    
-    let success = false;
     try {
-      success = document.execCommand('copy');
-    } catch (err) {
-      success = false;
-    }
-
-    if (success) {
-      setCopiedField(field);
-      setTimeout(() => setCopiedField(null), 2000);
-    } else {
-      // Fallback a la API moderna si execCommand falla
+      // Método simple pero efectivo
       if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text)
-          .then(() => {
-            setCopiedField(field);
-            setTimeout(() => setCopiedField(null), 2000);
-          })
-          .catch(err => console.error('Fallo total al copiar', err));
+        navigator.clipboard.writeText(text).then(() => {
+          setCopiedField(field);
+          setTimeout(() => setCopiedField(null), 2000);
+        }).catch(() => {
+          // Fallback manual si falla la promesa
+          const textArea = document.createElement("textarea");
+          textArea.value = text;
+          document.body.appendChild(textArea);
+          textArea.select();
+          document.execCommand('copy');
+          document.body.removeChild(textArea);
+          setCopiedField(field);
+          setTimeout(() => setCopiedField(null), 2000);
+        });
+      } else {
+        const textArea = document.createElement("textarea");
+        textArea.value = text;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        setCopiedField(field);
+        setTimeout(() => setCopiedField(null), 2000);
       }
+    } catch (err) {
+      console.error('Error al copiar:', err);
     }
-    
-    document.body.removeChild(textArea);
-  }, []);
+  };
 
-  const resetPostModal = useCallback(() => {
+  const resetPostModal = () => {
     setShowPostModal(false);
     setSelectedProductForPost(null);
     setGeneratedContent(null);
     setSearchProduct('');
-  }, []);
+  };
 
   return (
     <div className="admin-layout" style={{ backgroundColor: '#F0F2F5' }}>
