@@ -35,6 +35,9 @@ export function useAdminController() {
   const loadData = async () => {
     setLoading(true);
     try {
+      // Limpieza automática de imágenes de productos vendidos hace > 2 horas
+      await ProductModel.cleanupSoldImages();
+      
       const [prod, cat] = await Promise.all([ProductModel.getAll(), CategoryModel.getAll()]);
       setProducts(prod || []);
       setCategories(cat || []);
