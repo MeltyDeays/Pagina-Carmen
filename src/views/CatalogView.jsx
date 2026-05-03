@@ -1,4 +1,4 @@
-import { ShoppingBag } from 'lucide-react';
+import { ShoppingBag, Search } from 'lucide-react';
 import { useCatalogController } from '../controllers/useCatalogController';
 import { useCartController } from '../controllers/useCartController';
 import ProductCard from '../components/ProductCard';
@@ -6,7 +6,7 @@ import CartModal from '../components/CartModal';
 import { TelegramService } from '../services/TelegramService';
 
 export default function CatalogView() {
-  const { products, categories, loading, error, selectedCategory, setSelectedCategory } = useCatalogController();
+  const { products, categories, loading, error, selectedCategory, setSelectedCategory, searchQuery, setSearchQuery } = useCatalogController();
   const cartController = useCartController();
 
   const handleCheckout = async (whatsapp) => {
@@ -52,30 +52,76 @@ export default function CatalogView() {
         </div>
       </header>
 
-      {/* Hero / Categories */}
-      <main className="container" style={{ flexGrow: 1, padding: '3rem 1.5rem', display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-        <div style={{ textAlign: 'center', marginBottom: '1rem' }} className="animate-fade-in delay-1">
-          <h2 style={{ fontSize: '3rem', marginBottom: '0.5rem', color: 'var(--color-text-heading)', textShadow: '0 4px 10px rgba(0,0,0,0.05)' }}>
-            Descubre tu estilo
-          </h2>
-          <p style={{ color: 'var(--color-text-main)', maxWidth: '600px', margin: '0 auto', fontSize: '1.1rem', opacity: 0.8 }}>
-            Ropa de segunda mano seleccionada con amor. Encuentra piezas únicas a precios increíbles.
-          </p>
+      {/* Hero / Categories / Search */}
+      <main className="container" style={{ flexGrow: 1, padding: '1.5rem 1rem', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+        
+        {/* Search Bar Premium */}
+        <div className="animate-fade-in delay-1" style={{ position: 'relative', marginTop: '1rem' }}>
+          <Search size={20} style={{ position: 'absolute', left: '1.2rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-primary)' }} />
+          <input 
+            type="text" 
+            placeholder="Buscar por prenda, marca o estilo..." 
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            style={{
+              width: '100%',
+              padding: '1.1rem 1.5rem 1.1rem 3.5rem',
+              borderRadius: '20px',
+              border: 'none',
+              backgroundColor: 'white',
+              fontSize: '1rem',
+              boxShadow: '0 8px 30px rgba(0,0,0,0.04)',
+              outline: 'none',
+              transition: 'all 0.3s ease'
+            }}
+          />
         </div>
 
-        {/* Categories Filter (Pills) */}
-        <div className="animate-fade-in delay-2" style={{ display: 'flex', gap: '0.75rem', paddingBottom: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+        {/* Categories Horizontal Scroll (Non-invasive) */}
+        <div className="animate-fade-in delay-2" style={{ 
+          display: 'flex', 
+          gap: '0.8rem', 
+          overflowX: 'auto', 
+          padding: '0.5rem 0.2rem 1rem 0.2rem',
+          scrollbarWidth: 'none',
+          msOverflowStyle: 'none',
+          WebkitOverflowScrolling: 'touch'
+        }}>
           <button 
-            className={`btn-outline ${!selectedCategory ? 'active' : ''}`}
             onClick={() => setSelectedCategory(null)}
+            style={{
+              padding: '0.6rem 1.4rem',
+              borderRadius: '15px',
+              whiteSpace: 'nowrap',
+              border: '1px solid var(--color-primary)',
+              backgroundColor: !selectedCategory ? 'var(--color-primary)' : 'white',
+              color: !selectedCategory ? 'white' : 'var(--color-primary)',
+              fontSize: '0.9rem',
+              fontWeight: '600',
+              cursor: 'pointer',
+              transition: 'all 0.2s ease',
+              boxShadow: !selectedCategory ? '0 5px 15px rgba(103, 58, 183, 0.2)' : 'none'
+            }}
           >
             Todo
           </button>
           {categories.map(cat => (
             <button 
               key={cat.id}
-              className={`btn-outline ${selectedCategory === cat.id ? 'active' : ''}`}
               onClick={() => setSelectedCategory(cat.id)}
+              style={{
+                padding: '0.6rem 1.4rem',
+                borderRadius: '15px',
+                whiteSpace: 'nowrap',
+                border: '1px solid rgba(103, 58, 183, 0.2)',
+                backgroundColor: selectedCategory === cat.id ? 'var(--color-primary)' : 'white',
+                color: selectedCategory === cat.id ? 'white' : 'var(--color-text-main)',
+                fontSize: '0.9rem',
+                fontWeight: '600',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+                boxShadow: selectedCategory === cat.id ? '0 5px 15px rgba(103, 58, 183, 0.2)' : 'none'
+              }}
             >
               {cat.name}
             </button>
@@ -94,8 +140,8 @@ export default function CatalogView() {
         ) : (
           <div style={{ 
             display: 'grid', 
-            gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', 
-            gap: '2.5rem' 
+            gridTemplateColumns: 'repeat(auto-fill, minmax(145px, 1fr))', 
+            gap: '1rem' 
           }}>
             {products.map((product, index) => (
               <ProductCard 

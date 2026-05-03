@@ -8,6 +8,7 @@ export function useCatalogController() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     loadData();
@@ -24,23 +25,14 @@ export function useCatalogController() {
       setCategories(categoriesData || []);
     } catch (err) {
       console.error(err);
-      // Fallback para pruebas sin base de datos real aún
-      setError("No se pudo cargar desde Supabase. Usando mock local.");
-      setProducts([
-        { id: '1', name: 'Blusa Vintage', price: 150, brand: 'Shein', materials: ['Algodón'], condition: 'Como nueva', images: ['https://placehold.co/300x400/D1C4E9/4A4A4A?text=Blusa'] },
-        { id: '2', name: 'Pantalón Cargo', price: 300, brand: 'Zara', materials: ['Poliéster'], condition: 'Buen estado', images: ['https://placehold.co/300x400/F8BBD0/4A4A4A?text=Pantalon'] }
-      ]);
-      setCategories([
-        { id: 'c1', name: 'Blusas' },
-        { id: 'c2', name: 'Pantalones' }
-      ]);
+      setError("Error cargando catálogo.");
     } finally {
       setLoading(false);
     }
   };
 
   const filteredProducts = products.filter(p => {
-    // 0. Ocultar si NO está publicado (a menos que sea data vieja sin el campo, que tratamos como publicada)
+    // 0. Ocultar si NO está publicado
     if (p.is_published === false) return false;
 
     // 1. Ocultar si se vendió hace más de 2 horas
@@ -53,6 +45,11 @@ export function useCatalogController() {
     
     // 2. Filtrar por categoría
     if (selectedCategory && p.category_id !== selectedCategory) return false;
+
+    // 3. Filtrar por búsqueda
+    if (searchQuery && !p.name.toLowerCase().includes(searchQuery.toLowerCase()) && !p.brand?.toLowerCase().includes(searchQuery.toLowerCase())) {
+      return false;
+    }
     
     return true;
   });
@@ -63,6 +60,8 @@ export function useCatalogController() {
     loading,
     error,
     selectedCategory,
-    setSelectedCategory
+    setSelectedCategory,
+    searchQuery,
+    setSearchQuery
   };
 }

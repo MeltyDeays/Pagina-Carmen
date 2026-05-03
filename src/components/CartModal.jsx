@@ -1,7 +1,7 @@
-import { X, Minus, Plus, Send, ShoppingBag } from 'lucide-react';
+import { X, Trash2, Send, ShoppingBag } from 'lucide-react';
 import { useState } from 'react';
 
-export default function CartModal({ cart, isCartOpen, toggleCart, updateQuantity, totalAmount, onCheckout }) {
+export default function CartModal({ cart, isCartOpen, toggleCart, removeFromCart, totalAmount, onCheckout }) {
   const [whatsapp, setWhatsapp] = useState('');
 
   if (!isCartOpen) return null;
@@ -45,11 +45,14 @@ export default function CartModal({ cart, isCartOpen, toggleCart, updateQuantity
                   <h4 style={{ margin: '0 0 0.2rem 0', fontSize: '1rem', color: 'var(--color-text-heading)' }}>{item.name}</h4>
                   <span style={{ color: 'var(--color-primary-dark)', fontWeight: 'bold' }}>C${item.price}</span>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(255,255,255,0.6)', padding: '0.2rem', borderRadius: '8px', boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.05)' }}>
-                  <button onClick={() => updateQuantity(item.id, item.quantity - 1)} style={{ background: 'white', borderRadius: '6px', padding: '0.3rem', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}><Minus size={14}/></button>
-                  <span style={{ minWidth: '20px', textAlign: 'center', fontWeight: '500' }}>{item.quantity}</span>
-                  <button onClick={() => updateQuantity(item.id, item.quantity + 1)} style={{ background: 'white', borderRadius: '6px', padding: '0.3rem', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}><Plus size={14}/></button>
-                </div>
+                <button 
+                  onClick={() => removeFromCart(item.id)} 
+                  style={{ background: '#FEE2E2', color: '#EF4444', borderRadius: '10px', padding: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}
+                  onMouseOver={e => e.currentTarget.style.background = '#FCA5A5'}
+                  onMouseOut={e => e.currentTarget.style.background = '#FEE2E2'}
+                >
+                  <Trash2 size={18}/>
+                </button>
               </div>
             ))
           )}
