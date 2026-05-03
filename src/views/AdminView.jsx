@@ -20,8 +20,14 @@ export default function AdminView() {
 
   const now = new Date();
   const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  startOfMonth.setHours(0, 0, 0, 0);
+
   const startOfWeek = new Date(now);
-  startOfWeek.setDate(now.getDate() - now.getDay());
+  // Ajuste para que la semana empiece el Lunes (si es Domingo (0), restamos 6 días)
+  const day = now.getDay();
+  const diff = now.getDate() - day + (day === 0 ? -6 : 1);
+  startOfWeek.setDate(diff);
+  startOfWeek.setHours(0, 0, 0, 0);
 
   const totalEarnings = soldProducts.reduce((sum, p) => sum + (p.price || 0), 0);
   const earningsMonth = soldProducts
