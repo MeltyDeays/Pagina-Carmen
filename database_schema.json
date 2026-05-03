@@ -1,0 +1,90 @@
+-- Habilitar extensión para UUIDs
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+-- Tabla de Categorías
+CREATE TABLE public.categories (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name TEXT NOT NULL,
+    description TEXT,
+    created_at TIMESTAMPTZ DEFAULT now()
+);
+
+-- Tabla de Productos
+CREATE TABLE public.products (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    category_id UUID REFERENCES public.categories(id) ON DELETE SET NULL,
+    name TEXT NOT NULL,
+    description TEXT,
+    price DECIMAL(10,
+2) NOT NULL,
+    brand TEXT,
+    materials TEXT[] DEFAULT '{}',
+    size TEXT,
+    condition TEXT,
+    images TEXT[] DEFAULT '{}',
+    stock INTEGER DEFAULT 1,
+    is_available BOOLEAN DEFAULT true,
+    sold_at TIMESTAMPTZ,
+    created_at TIMESTAMPTZ DEFAULT now()
+);
+
+-- Tabla de Órdenes
+CREATE TABLE public.orders (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    customer_whatsapp TEXT NOT NULL,
+    status TEXT DEFAULT 'pending',
+    total_amount DECIMAL(10,
+2) NOT NULL,
+    payment_method TEXT NOT NULL,
+    shipping_method TEXT NOT NULL,
+    shipping_address TEXT,
+    telegram_message_sent BOOLEAN DEFAULT false,
+    created_at TIMESTAMPTZ DEFAULT now()
+);
+
+-- Tabla de Artículos de la Orden
+CREATE TABLE public.order_items (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    order_id UUID REFERENCES public.orders(id) ON DELETE CASCADE,
+    product_id UUID REFERENCES public.products(id) ON DELETE SET NULL,
+    price_at_purchase DECIMAL(10,
+2) NOT NULL,
+    quantity INTEGER DEFAULT 1
+);
+
+-- Configuración de la tienda (Singleton)
+CREATE TABLE public.store_settings (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    store_name TEXT DEFAULT 'Tienda de Segunda Mano',
+    location TEXT DEFAULT 'Santo Tomás, Chontales, Nicaragua',
+    owner_whatsapp TEXT,
+    telegram_bot_id TEXT,
+    telegram_chat_id TEXT,
+    updated_at TIMESTAMPTZ DEFAULT now()
+);
+
+-- Índices de Rendimiento (Foreign Keys)
+CREATE INDEX idx_products_category_id ON public.products(category_id);
+CREATE INDEX idx_order_items_order_id ON public.order_items(order_id);
+CREATE INDEX idx_order_items_product_id ON public.order_items(product_id);
+
+-- Habilitar RLS en todas las tablas
+ALTER TABLE public.categories ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.products ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.orders ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.order_items ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.store_settings ENABLE ROW LEVEL SECURITY;
+
+-- Políticas para Usuarios Públicos (Compradores)
+CREATE POLICY "Permitir lectura pública a categorías" ON public.categories FOR SELECT USING (true);
+CREATE POLICY "Permitir lectura pública a productos" ON public.products FOR SELECT USING (true);
+CREATE POLICY "Permitir lectura pública a configuraciones" ON public.store_settings FOR SELECT USING (true);
+CREATE POLICY "Permitir crear órdenes al público" ON public.orders FOR INSERT WITH CHECK (true);
+CREATE POLICY "Permitir crear items de orden al público" ON public.order_items FOR INSERT WITH CHECK (true);
+
+-- Políticas para Administradores (Autenticados en Supabase)
+CREATE POLICY "Administradores tienen acceso total a categorías" ON public.categories FOR ALL USING (auth.role() = 'authenticated');
+CREATE POLICY "Administradores tienen acceso total a productos" ON public.products FOR ALL USING (auth.role() = 'authenticated');
+CREATE POLICY "Administradores tienen acceso total a órdenes" ON public.orders FOR ALL USING (auth.role() = 'authenticated');
+CREATE POLICY "Administradores tienen acceso total a order_items" ON public.order_items FOR ALL USING (auth.role() = 'authenticated');
+CREATE POLICY "Administradores tienen acceso total a store_settings" ON public.store_settings FOR ALL USING (auth.role() = 'authenticated');

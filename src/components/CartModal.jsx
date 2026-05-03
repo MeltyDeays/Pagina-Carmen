@@ -1,0 +1,96 @@
+import { X, Minus, Plus, Send, ShoppingBag } from 'lucide-react';
+import { useState } from 'react';
+
+export default function CartModal({ cart, isCartOpen, toggleCart, updateQuantity, totalAmount, onCheckout }) {
+  const [whatsapp, setWhatsapp] = useState('');
+
+  if (!isCartOpen) return null;
+
+  return (
+    <div style={{
+      position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+      backgroundColor: 'rgba(0,0,0,0.4)', zIndex: 1000,
+      display: 'flex', justifyContent: 'flex-end',
+      backdropFilter: 'blur(8px)',
+      animation: 'fadeIn 0.3s ease'
+    }}>
+      <div className="glass-panel" style={{
+        width: '100%', maxWidth: '420px', height: '100%',
+        borderRadius: '24px 0 0 24px',
+        display: 'flex', flexDirection: 'column',
+        boxShadow: '-10px 0 30px rgba(0,0,0,0.1)',
+        borderRight: 'none',
+        transform: 'translateX(0)',
+        animation: 'fadeIn 0.4s cubic-bezier(0.2, 0.8, 0.2, 1)'
+      }}>
+        <div style={{ padding: '1.5rem', borderBottom: '1px solid rgba(0,0,0,0.05)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <h2 style={{ margin: 0, color: 'var(--color-text-heading)' }}>Tu Selección</h2>
+          <button onClick={toggleCart} style={{ background: 'none', color: 'var(--color-text-main)', transition: 'transform 0.2s ease' }} onMouseOver={e=>e.currentTarget.style.transform='rotate(90deg)'} onMouseOut={e=>e.currentTarget.style.transform='rotate(0deg)'}>
+            <X size={24} />
+          </button>
+        </div>
+
+        <div style={{ flexGrow: 1, overflowY: 'auto', padding: '1.5rem' }}>
+          {cart.length === 0 ? (
+            <div style={{ textAlign: 'center', marginTop: '3rem', color: 'var(--color-text-light)' }}>
+              <ShoppingBag size={48} style={{ opacity: 0.2, marginBottom: '1rem' }} />
+              <p>Tu carrito está vacío.</p>
+              <p style={{ fontSize: '0.9rem', marginTop: '0.5rem' }}>¡Agrega algunos tesoros!</p>
+            </div>
+          ) : (
+            cart.map((item, index) => (
+              <div key={item.id} className={`animate-fade-in delay-${(index % 6) + 1}`} style={{ display: 'flex', marginBottom: '1.2rem', alignItems: 'center', gap: '1rem', padding: '0.5rem', borderRadius: '12px', background: 'rgba(255,255,255,0.4)', border: '1px solid rgba(255,255,255,0.8)' }}>
+                <img src={item.images?.[0] || 'https://placehold.co/100x100'} alt={item.name} style={{ width: '70px', height: '70px', borderRadius: '8px', objectFit: 'cover', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }} />
+                <div style={{ flexGrow: 1 }}>
+                  <h4 style={{ margin: '0 0 0.2rem 0', fontSize: '1rem', color: 'var(--color-text-heading)' }}>{item.name}</h4>
+                  <span style={{ color: 'var(--color-primary-dark)', fontWeight: 'bold' }}>C${item.price}</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(255,255,255,0.6)', padding: '0.2rem', borderRadius: '8px', boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.05)' }}>
+                  <button onClick={() => updateQuantity(item.id, item.quantity - 1)} style={{ background: 'white', borderRadius: '6px', padding: '0.3rem', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}><Minus size={14}/></button>
+                  <span style={{ minWidth: '20px', textAlign: 'center', fontWeight: '500' }}>{item.quantity}</span>
+                  <button onClick={() => updateQuantity(item.id, item.quantity + 1)} style={{ background: 'white', borderRadius: '6px', padding: '0.3rem', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}><Plus size={14}/></button>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+
+        {cart.length > 0 && (
+          <div style={{ padding: '1.5rem', background: 'rgba(255,255,255,0.8)', borderTop: '1px solid rgba(0,0,0,0.05)', backdropFilter: 'blur(10px)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1.5rem', fontSize: '1.3rem', fontWeight: 'bold', color: 'var(--color-text-heading)' }}>
+              <span>Total:</span>
+              <span>C${totalAmount.toFixed(2)}</span>
+            </div>
+            
+            <div style={{ marginBottom: '0.5rem' }}>
+              <p style={{ fontSize: '0.85rem', color: 'var(--color-text-main)', marginBottom: '1rem', lineHeight: '1.5', background: 'rgba(209, 196, 233, 0.2)', padding: '0.8rem', borderRadius: '8px' }}>
+                📍 <strong>Santo Tomás, Chontales.</strong><br/>
+                🚚 Envíos por cargotrans y buses locales.<br/>
+                💵 Transferencias o pago en efectivo.
+              </p>
+              <input 
+                type="text" 
+                placeholder="Tu número de WhatsApp" 
+                className="input-field"
+                value={whatsapp}
+                onChange={(e) => setWhatsapp(e.target.value)}
+                style={{ marginBottom: '1rem', border: '1px solid var(--color-primary)' }}
+              />
+              <button 
+                className="btn-primary" 
+                style={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.5rem', padding: '1rem' }}
+                onClick={() => {
+                  if(!whatsapp) return alert('Por favor, ingresa tu número de WhatsApp');
+                  onCheckout(whatsapp);
+                }}
+              >
+                <Send size={18} /> Solicitar Pedido por WhatsApp
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
