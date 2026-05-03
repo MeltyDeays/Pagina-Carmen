@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { Package, Tag, LogOut, Plus, Search, DollarSign, LayoutDashboard, ShoppingBag, Eye, Trash2, CheckCircle } from 'lucide-react';
+import { Package, Tag, LogOut, Plus, Search, DollarSign, LayoutDashboard, ShoppingBag, Eye, Trash2, CheckCircle, X } from 'lucide-react';
 import { useAdminController } from '../controllers/useAdminController';
 
 export default function AdminView() {
@@ -502,23 +502,53 @@ export default function AdminView() {
 
                   {/* Fila 4: Fotos */}
                   <div style={{ gridColumn: 'span 6' }}>
-                    <label style={{ fontSize: '0.75rem', fontWeight: '700', marginBottom: '0.2rem', display: 'block', color: 'var(--color-text-light)' }}>Fotos</label>
-                    <div style={{ border: '2px dashed var(--color-primary)', borderRadius: '10px', padding: '0.75rem', textAlign: 'center', backgroundColor: 'rgba(209, 196, 233, 0.05)', position: 'relative' }}>
-                      <input type="file" multiple accept="image/*" onChange={(e) => admin.setSelectedFiles(Array.from(e.target.files))} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', opacity: 0, cursor: 'pointer' }} />
+                    <label style={{ fontSize: '0.75rem', fontWeight: '700', marginBottom: '0.2rem', display: 'block', color: 'var(--color-text-light)' }}>
+                      Fotos (Mínimo 2 recomendadas para mejor catálogo)
+                    </label>
+                    <div style={{ border: '2px dashed var(--color-primary)', borderRadius: '10px', padding: '0.75rem', textAlign: 'center', backgroundColor: 'rgba(209, 196, 233, 0.05)', position: 'relative', marginBottom: '0.5rem' }}>
+                      <input type="file" multiple accept="image/*" onChange={(e) => admin.setSelectedFiles([...admin.selectedFiles, ...Array.from(e.target.files)])} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', opacity: 0, cursor: 'pointer' }} />
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
                         <Plus size={16} color="var(--color-primary-dark)" />
-                        <span style={{ fontSize: '0.85rem' }}>Seleccionar fotos</span>
+                        <span style={{ fontSize: '0.85rem' }}>Añadir fotos</span>
                       </div>
                     </div>
 
-                    {admin.selectedFiles.length > 0 && (
-                      <div style={{ display: 'flex', gap: '0.4rem', marginTop: '0.5rem', overflowX: 'auto' }}>
-                        {admin.selectedFiles.map((file, i) => (
-                          <div key={i} style={{ position: 'relative', minWidth: '50px', height: '50px', borderRadius: '6px', overflow: 'hidden', border: '1px solid #ddd' }}>
-                            <img src={URL.createObjectURL(file)} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                          </div>
-                        ))}
-                      </div>
+                    {/* Previsualización de fotos existentes y nuevas */}
+                    <div style={{ display: 'flex', gap: '0.6rem', overflowX: 'auto', padding: '5px 0' }}>
+                      {/* Fotos ya subidas (en edición) */}
+                      {admin.productForm.images && admin.productForm.images.map((url, i) => (
+                        <div key={`old-${i}`} style={{ position: 'relative', minWidth: '60px', height: '60px', borderRadius: '8px', overflow: 'hidden', border: '1px solid #ddd', flexShrink: 0 }}>
+                          <img src={url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                          <button 
+                            type="button"
+                            onClick={() => admin.removeImage(i)}
+                            style={{ position: 'absolute', top: '2px', right: '2px', background: 'rgba(255,0,0,0.7)', color: 'white', border: 'none', borderRadius: '50%', width: '18px', height: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: '10px' }}
+                          >
+                            <Trash2 size={10} />
+                          </button>
+                        </div>
+                      ))}
+
+                      {/* Fotos seleccionadas para subir */}
+                      {admin.selectedFiles.map((file, i) => (
+                        <div key={`new-${i}`} style={{ position: 'relative', minWidth: '60px', height: '60px', borderRadius: '8px', overflow: 'hidden', border: '2px solid var(--color-primary)', flexShrink: 0 }}>
+                          <img src={URL.createObjectURL(file)} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.7 }} />
+                          <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: 'var(--color-primary)', color: 'var(--color-primary-dark)', fontSize: '8px', textAlign: 'center', fontWeight: '800' }}>NUEVA</div>
+                          <button 
+                            type="button"
+                            onClick={() => admin.removeSelectedFile(i)}
+                            style={{ position: 'absolute', top: '2px', right: '2px', background: 'rgba(0,0,0,0.5)', color: 'white', border: 'none', borderRadius: '50%', width: '18px', height: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: '10px' }}
+                          >
+                            <X size={10} />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                    
+                    {(admin.productForm.images.length + admin.selectedFiles.length) < 2 && (
+                      <p style={{ fontSize: '0.65rem', color: '#D32F2F', marginTop: '0.4rem', fontWeight: '600' }}>
+                        ⚠️ Intenta subir al menos 2 fotos para que el cliente pueda apreciar mejor la prenda.
+                      </p>
                     )}
                   </div>
 

@@ -1,6 +1,6 @@
 import { ShoppingBag } from 'lucide-react';
 
-export default function ProductCard({ product, onAddToCart, index = 0 }) {
+export default function ProductCard({ product, onAddToCart, onOpenDetail, index = 0 }) {
   const image = product.images && product.images.length > 0 
     ? product.images[0] 
     : 'https://placehold.co/300x400/D1C4E9/4A4A4A?text=Sin+Imagen';
@@ -16,8 +16,11 @@ export default function ProductCard({ product, onAddToCart, index = 0 }) {
       borderRadius: '20px',
       boxShadow: '0 10px 30px rgba(0,0,0,0.05)',
       opacity: product.sold_at ? 0.9 : 1,
-      transition: 'transform 0.3s ease, box-shadow 0.3s ease'
-    }}>
+      transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+      cursor: 'pointer'
+    }}
+    onClick={() => onOpenDetail(product)}
+    >
       <div className="img-zoom-wrapper" style={{ position: 'relative', height: '190px' }}>
         <img 
           src={image} 
@@ -98,7 +101,10 @@ export default function ProductCard({ product, onAddToCart, index = 0 }) {
                 border: 'none',
                 boxShadow: 'var(--shadow-glow)'
               }}
-              onClick={(e) => onAddToCart(product, e)}
+              onClick={(e) => {
+                e.stopPropagation(); // Evita abrir el modal al clickear el botón
+                onAddToCart(product, e);
+              }}
               title="Añadir al carrito"
             >
               <ShoppingBag size={18} color="white" />

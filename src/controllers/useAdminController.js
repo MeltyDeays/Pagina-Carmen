@@ -132,7 +132,7 @@ export function useAdminController() {
         condition: productForm.condition,
         size: productForm.size,
         materials: productForm.materials ? (typeof productForm.materials === 'string' ? productForm.materials.split(',').map(m => m.trim()) : productForm.materials) : [],
-        images: imageUrls.length > 0 ? imageUrls : (Array.isArray(productForm.images) ? productForm.images : [productForm.images]),
+        images: imageUrls.length > 0 ? [...(productForm.images || []), ...imageUrls] : productForm.images,
         is_published: productForm.is_published
       };
 
@@ -268,6 +268,18 @@ export function useAdminController() {
     }
   };
 
+  const removeImage = (index) => {
+    const newImages = [...productForm.images];
+    newImages.splice(index, 1);
+    setProductForm({ ...productForm, images: newImages });
+  };
+
+  const removeSelectedFile = (index) => {
+    const newFiles = [...selectedFiles];
+    newFiles.splice(index, 1);
+    setSelectedFiles(newFiles);
+  };
+
   return {
     products, categories, loading,
     showProductForm, setShowProductForm,
@@ -278,7 +290,7 @@ export function useAdminController() {
     handleProductSubmit, handleCategorySubmit, handleMarkAsSold,
     handleDeleteProduct, handleDeleteCategory,
     startEditProduct, startEditCategory,
-    togglePublished,
+    togglePublished, removeImage, removeSelectedFile,
     editingId, setEditingId, editingCatId, setEditingCatId,
     categoryFilter, setCategoryFilter, filteredProducts
   };

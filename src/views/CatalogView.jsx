@@ -3,6 +3,7 @@ import { ShoppingBag, Search, CheckCircle } from 'lucide-react';
 import { useCatalogController } from '../controllers/useCatalogController';
 import { useCartController } from '../controllers/useCartController';
 import ProductCard from '../components/ProductCard';
+import ProductDetailModal from '../components/ProductDetailModal';
 import CartModal from '../components/CartModal';
 import { TelegramService } from '../services/TelegramService';
 
@@ -12,6 +13,7 @@ export default function CatalogView() {
   const [isAnimating, setIsAnimating] = useState(false);
   const [flyingItems, setFlyingItems] = useState([]);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
   const cartIconRef = useRef(null);
 
   // Animación del carrito cuando cambia la cantidad de items
@@ -196,6 +198,7 @@ export default function CatalogView() {
                 key={product.id} 
                 product={product} 
                 onAddToCart={handleAddToCartWithAnimation} 
+                onOpenDetail={(p) => setSelectedProduct(p)}
                 index={index}
               />
             ))}
@@ -242,6 +245,14 @@ export default function CatalogView() {
         {...cartController}
         onCheckout={handleCheckout}
       />
+
+      {selectedProduct && (
+        <ProductDetailModal 
+          product={selectedProduct} 
+          onClose={() => setSelectedProduct(null)} 
+          onAddToCart={handleAddToCartWithAnimation}
+        />
+      )}
 
       {/* Notificación de Éxito Premium (Telegram / WhatsApp) */}
       {showSuccess && (
