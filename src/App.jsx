@@ -7,6 +7,7 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<CatalogView />} />
+        <Route path="/producto/:id" element={<CatalogView />} />
         <Route path="/admin" element={<AdminView />} />
       </Routes>
     </Router>

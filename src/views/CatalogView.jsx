@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { ShoppingBag, Search, CheckCircle } from 'lucide-react';
 import { useCatalogController } from '../controllers/useCatalogController';
 import { useCartController } from '../controllers/useCartController';
@@ -10,11 +11,30 @@ import { WhatsAppService } from '../services/WhatsAppService';
 export default function CatalogView() {
   const { products, categories, loading, error, selectedCategory, setSelectedCategory, searchQuery, setSearchQuery } = useCatalogController();
   const cartController = useCartController();
+  const { id: urlProductId } = useParams();
+  const navigate = useNavigate();
   const [isAnimating, setIsAnimating] = useState(false);
   const [flyingItems, setFlyingItems] = useState([]);
   const [showSuccess, setShowSuccess] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const cartIconRef = useRef(null);
+
+  // Deep linking logic
+  useEffect(() => {
+    if (urlProductId && products.length > 0) {
+      const product = products.find(p => p.id === urlProductId);
+      if (product) {
+        setSelectedProduct(product);
+      }
+    }
+  }, [urlProductId, products]);
+
+  const closeDetail = () => {
+    setSelectedProduct(null);
+    if (urlProductId) {
+      navigate('/', { replace: true });
+    }
+  };
 
   // Animación del carrito cuando cambia la cantidad de items
   useEffect(() => {
@@ -249,7 +269,7 @@ export default function CatalogView() {
       {selectedProduct && (
         <ProductDetailModal 
           product={selectedProduct} 
-          onClose={() => setSelectedProduct(null)} 
+          onClose={closeDetail} 
           onAddToCart={handleAddToCartWithAnimation}
         />
       )}

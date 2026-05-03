@@ -993,13 +993,12 @@ export default function AdminView() {
                     <div>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
                         <span style={{ fontSize: '0.75rem', fontWeight: '800', color: 'var(--color-primary-dark)', letterSpacing: '0.05em' }}>TÍTULO SUGERIDO</span>
-                        <button 
+                         <button 
                           type="button"
                           onClick={(e) => { e.preventDefault(); copyToClipboard(generatedContent.title, 'title'); }}
                           style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', background: copiedField === 'title' ? '#E8F5E9' : '#f0f0f0', border: 'none', padding: '0.4rem 0.8rem', borderRadius: '8px', fontSize: '0.75rem', fontWeight: '600', cursor: 'pointer', color: copiedField === 'title' ? '#2E7D32' : '#333', transition: 'all 0.2s' }}
                         >
-                          {copiedField === 'title' ? <Check size={14} /> : <Copy size={14} />}
-                          {copiedField === 'title' ? 'Copiado' : 'Copiar'}
+                          {copiedField === 'title' ? '✅ ¡Copiado!' : '📋 Copiar Título'}
                         </button>
                       </div>
                       <div style={{ padding: '1rem', background: '#f9f9f9', borderRadius: '12px', border: '1px solid #eee', fontSize: '1rem', fontWeight: '700' }}>
@@ -1016,8 +1015,7 @@ export default function AdminView() {
                           onClick={(e) => { e.preventDefault(); copyToClipboard(generatedContent.description, 'desc'); }}
                           style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', background: copiedField === 'desc' ? '#E8F5E9' : '#f0f0f0', border: 'none', padding: '0.4rem 0.8rem', borderRadius: '8px', fontSize: '0.75rem', fontWeight: '600', cursor: 'pointer', color: copiedField === 'desc' ? '#2E7D32' : '#333', transition: 'all 0.2s' }}
                         >
-                          {copiedField === 'desc' ? <Check size={14} /> : <Copy size={14} />}
-                          {copiedField === 'desc' ? 'Copiado' : 'Copiar'}
+                          {copiedField === 'desc' ? '✅ ¡Copiada!' : '📋 Copiar Descripción'}
                         </button>
                       </div>
                       <div style={{ padding: '1rem', background: '#f9f9f9', borderRadius: '12px', border: '1px solid #eee', fontSize: '0.9rem', lineHeight: '1.6', whiteSpace: 'pre-wrap', maxHeight: '250px', overflowY: 'auto' }}>
