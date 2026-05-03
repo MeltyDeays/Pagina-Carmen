@@ -19,6 +19,10 @@ export function useAdminController() {
 
   const [categoryForm, setCategoryForm] = useState({ name: '', description: '' });
 
+  // Control de edición
+  const [editingId, setEditingId] = useState(null);
+  const [editingCatId, setEditingCatId] = useState(null);
+
   useEffect(() => {
     loadData();
   }, []);
@@ -82,11 +86,19 @@ export function useAdminController() {
         category_id: productForm.category_id || null
       };
 
-      await ProductModel.create(data);
-      alert('¡Producto publicado con éxito!');
+      if (editingId) {
+        // ACTUALIZAR
+        await ProductModel.update(editingId, data);
+        alert('¡Producto actualizado!');
+      } else {
+        // CREAR
+        await ProductModel.create(data);
+        alert('¡Producto publicado con éxito!');
+      }
       
       // Limpiar todo
       setShowProductForm(false);
+      setEditingId(null);
       setSelectedFiles([]);
       setProductForm({ name: '', description: '', price: '', brand: '', category_id: '', materials: '', condition: '', size: '', images: [], is_published: false });
       loadData();
@@ -98,18 +110,73 @@ export function useAdminController() {
     }
   };
 
+  const startEditProduct = (product) => {
+    setProductForm({
+      name: product.name,
+      description: product.description,
+      price: product.price,
+      brand: product.brand,
+      category_id: product.category_id,
+      materials: Array.isArray(product.materials) ? product.materials.join(', ') : '',
+      condition: product.condition,
+      size: product.size,
+      images: product.images,
+      is_published: product.is_published
+    });
+    setEditingId(product.id);
+    setShowProductForm(true);
+  };
+
+  const handleDeleteProduct = async (id) => {
+    if (!window.confirm("¿Estás seguro de eliminar este producto? Esta acción no se puede deshacer.")) return;
+    try {
+      setLoading(true);
+      await ProductModel.delete(id);
+      loadData();
+    } catch (err) {
+      alert("Error eliminando producto");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleCategorySubmit = async (e) => {
     e.preventDefault();
     try {
       setLoading(true);
-      await CategoryModel.create(categoryForm);
-      alert('Categoría agregada');
+      if (editingCatId) {
+        await CategoryModel.update(editingCatId, categoryForm);
+        alert('Categoría actualizada');
+      } else {
+        await CategoryModel.create(categoryForm);
+        alert('Categoría agregada');
+      }
       setShowCategoryForm(false);
+      setEditingCatId(null);
       setCategoryForm({ name: '', description: '' });
       loadData();
     } catch (err) {
       alert('Error guardando categoría.');
       console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const startEditCategory = (cat) => {
+    setCategoryForm({ name: cat.name, description: cat.description });
+    setEditingCatId(cat.id);
+    setShowCategoryForm(true);
+  };
+
+  const handleDeleteCategory = async (id) => {
+    if (!window.confirm("¿Eliminar categoría? Los productos asociados podrían quedar sin categoría.")) return;
+    try {
+      setLoading(true);
+      await CategoryModel.delete(id);
+      loadData();
+    } catch (err) {
+      alert("Error eliminando categoría");
     } finally {
       setLoading(false);
     }
@@ -148,6 +215,9 @@ export function useAdminController() {
     productForm, setProductForm,
     categoryForm, setCategoryForm,
     selectedFiles, setSelectedFiles,
-    handleProductSubmit, handleCategorySubmit, handleMarkAsSold
+    handleProductSubmit, handleCategorySubmit, handleMarkAsSold,
+    handleDeleteProduct, handleDeleteCategory,
+    startEditProduct, startEditCategory,
+    editingId, editingCatId
   };
 }

@@ -222,7 +222,18 @@ export default function AdminView() {
               </button>
             )}
             <div>
-              <h1 style={{ margin: 0, fontSize: '1.8rem', color: 'var(--color-primary-dark)' }}>
+              <h1 style={{ margin: 0, fontSize: '1.8rem', color: 'var(--color-primary-dark)', cursor: 'pointer' }} onClick={() => {
+                  if(activeTab === 'products') {
+                    admin.setEditingId(null);
+                    admin.setProductForm({ name: '', description: '', price: '', brand: '', category_id: '', materials: '', condition: '', size: '', images: [], is_published: false });
+                    admin.setShowProductForm(!admin.showProductForm);
+                  }
+                  if(activeTab === 'categories') {
+                    admin.setEditingCatId(null);
+                    admin.setCategoryForm({ name: '', description: '' });
+                    admin.setShowCategoryForm(!admin.showCategoryForm);
+                  }
+                }}>
                 {activeTab === 'dashboard' && "Panel de Inteligencia"}
                 {activeTab === 'products' && "Inventario"}
                 {activeTab === 'categories' && "Categorías"}
@@ -346,7 +357,8 @@ export default function AdminView() {
             {admin.showProductForm && (
               <form className="glass-panel animate-fade-in" style={{ padding: '1.25rem', marginBottom: '2rem', border: '1px solid var(--color-primary)' }} onSubmit={admin.handleProductSubmit}>
                 <h3 style={{ marginBottom: '1rem', fontSize: '1.2rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <Plus size={18} /> Nueva Prenda
+                  {admin.editingId ? <Eye size={18} /> : <Plus size={18} />} 
+                  {admin.editingId ? 'Editar Prenda' : 'Nueva Prenda'}
                 </h3>
                 
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: '0.75rem' }}>
@@ -415,8 +427,10 @@ export default function AdminView() {
                 </div>
 
                 <div style={{ marginTop: '1rem', display: 'flex', gap: '0.75rem' }}>
-                  <button type="submit" className="btn-primary" style={{ flexGrow: 1, padding: '0.75rem' }}>Publicar</button>
-                  <button type="button" className="btn-outline" onClick={() => admin.setShowProductForm(false)} style={{ flexGrow: 1, padding: '0.75rem' }}>Cancelar</button>
+                  <button type="submit" className="btn-primary" style={{ flexGrow: 1, padding: '0.75rem' }}>
+                    {admin.editingId ? 'Guardar Cambios' : 'Publicar'}
+                  </button>
+                  <button type="button" className="btn-outline" onClick={() => { admin.setShowProductForm(false); admin.setEditingId(null); }} style={{ flexGrow: 1, padding: '0.75rem' }}>Cancelar</button>
                 </div>
               </form>
             )}
@@ -468,8 +482,8 @@ export default function AdminView() {
                             <CheckCircle size={18} />
                           </button>
                         )}
-                        <button className="btn-outline" style={{ padding: '0.5rem', borderRadius: '8px' }} title="Ver Detalles"><Eye size={18} /></button>
-                        <button className="btn-outline" style={{ padding: '0.5rem', borderRadius: '8px', color: '#C62828' }} title="Eliminar"><Trash2 size={18} /></button>
+                        <button className="btn-outline" style={{ padding: '0.5rem', borderRadius: '8px' }} title="Editar" onClick={() => admin.startEditProduct(p)}><Eye size={18} /></button>
+                        <button className="btn-outline" style={{ padding: '0.5rem', borderRadius: '8px', color: '#C62828' }} title="Eliminar" onClick={() => admin.handleDeleteProduct(p.id)}><Trash2 size={18} /></button>
                       </div>
                     </div>
                   ))
@@ -485,7 +499,8 @@ export default function AdminView() {
              {admin.showCategoryForm && (
               <form className="glass-panel animate-fade-in" style={{ padding: '1.5rem', marginBottom: '2rem', border: '1px solid var(--color-primary)' }} onSubmit={admin.handleCategorySubmit}>
                  <h3 style={{ marginBottom: '1rem', fontSize: '1.2rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                   <Tag size={18} /> Nueva Categoría
+                   {admin.editingCatId ? <Tag size={18} /> : <Tag size={18} />} 
+                   {admin.editingCatId ? 'Editar Categoría' : 'Nueva Categoría'}
                  </h3>
                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem' }}>
                     <div style={{ gridColumn: 'span 2' }}>
@@ -498,8 +513,10 @@ export default function AdminView() {
                     </div>
                  </div>
                  <div style={{ marginTop: '1.2rem', display: 'flex', gap: '1rem' }}>
-                  <button type="submit" className="btn-primary" style={{ flexGrow: 1 }}>Guardar Categoría</button>
-                  <button type="button" className="btn-outline" onClick={() => admin.setShowCategoryForm(false)}>Cancelar</button>
+                  <button type="submit" className="btn-primary" style={{ flexGrow: 1 }}>
+                    {admin.editingCatId ? 'Actualizar Categoría' : 'Guardar Categoría'}
+                  </button>
+                  <button type="button" className="btn-outline" onClick={() => { admin.setShowCategoryForm(false); admin.setEditingCatId(null); }}>Cancelar</button>
                 </div>
               </form>
              )}
@@ -519,8 +536,8 @@ export default function AdminView() {
                              <Package size={22} color="var(--color-text-heading)" />
                           </div>
                           <div style={{ display: 'flex', gap: '0.5rem' }}>
-                            <button className="btn-outline" style={{ padding: '0.4rem', borderRadius: '8px' }} title="Editar"><Eye size={16}/></button>
-                            <button className="btn-outline" style={{ padding: '0.4rem', borderRadius: '8px', color: '#C62828' }} title="Eliminar"><Trash2 size={16}/></button>
+                            <button className="btn-outline" style={{ padding: '0.4rem', borderRadius: '8px' }} title="Editar" onClick={() => admin.startEditCategory(c)}><Eye size={16}/></button>
+                            <button className="btn-outline" style={{ padding: '0.4rem', borderRadius: '8px', color: '#C62828' }} title="Eliminar" onClick={() => admin.handleDeleteCategory(c.id)}><Trash2 size={16}/></button>
                           </div>
                         </div>
                         
