@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
-import { Package, Tag, LogOut, Plus, Search, DollarSign, LayoutDashboard, ShoppingBag, Eye, Trash2, CheckCircle, X } from 'lucide-react';
+import { Package, Tag, LogOut, Plus, Search, DollarSign, LayoutDashboard, ShoppingBag, Eye, Trash2, CheckCircle, X, Sparkles, Copy, Check, ChevronRight } from 'lucide-react';
 import { useAdminController } from '../controllers/useAdminController';
+import { AIService } from '../services/AIService';
 
 export default function AdminView() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -12,6 +13,14 @@ export default function AdminView() {
   const dragStart = useRef({ x: 0, y: 0 });
 
   const admin = useAdminController();
+
+  // AI Generation States
+  const [showPostModal, setShowPostModal] = useState(false);
+  const [selectedProductForPost, setSelectedProductForPost] = useState(null);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [generatedContent, setGeneratedContent] = useState(null);
+  const [copiedField, setCopiedField] = useState(null);
+  const [searchProduct, setSearchProduct] = useState('');
 
   // Métrica avanzadas
   const pendingProducts = admin.products.filter(p => !p.is_published && !p.sold_at);
@@ -111,6 +120,34 @@ export default function AdminView() {
 
   const soldCount = admin.products.filter(p => p.sold_at).length;
   const availableCount = admin.products.length - soldCount;
+
+  const handleGenerateAI = async (product) => {
+    setSelectedProductForPost(product);
+    setIsGenerating(true);
+    setGeneratedContent(null);
+    try {
+      const content = await AIService.generatePost(product);
+      setGeneratedContent(content);
+    } catch (error) {
+      alert("Error al generar la publicación. Por favor intenta de nuevo.");
+      console.error(error);
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  const copyToClipboard = (text, field) => {
+    navigator.clipboard.writeText(text);
+    setCopiedField(field);
+    setTimeout(() => setCopiedField(null), 2000);
+  };
+
+  const resetPostModal = () => {
+    setShowPostModal(false);
+    setSelectedProductForPost(null);
+    setGeneratedContent(null);
+    setSearchProduct('');
+  };
 
   return (
     <div className="admin-layout" style={{ backgroundColor: '#F0F2F5' }}>
@@ -283,24 +320,44 @@ export default function AdminView() {
             </div>
           </div>
           
-          <button
-            onClick={() => setIsAuthenticated(false)}
-            className="btn-outline"
-            style={{ 
-              display: 'flex', 
-              alignItems: 'center', 
-              gap: '0.4rem', 
-              padding: '0.5rem 0.8rem', 
-              color: '#C62828', 
-              borderColor: 'rgba(198, 40, 40, 0.15)',
-              background: 'white',
-              fontSize: '0.8rem',
-              fontWeight: '600',
-              borderRadius: '10px'
-            }}
-          >
-            <LogOut size={16} /> <span className="hide-mobile">Salir</span>
-          </button>
+          <div style={{ display: 'flex', gap: '0.5rem' }}>
+            <button
+              onClick={() => setShowPostModal(true)}
+              className="btn-primary"
+              style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '0.4rem', 
+                padding: '0.5rem 0.8rem', 
+                background: 'linear-gradient(135deg, #673AB7, #9C27B0)',
+                border: 'none',
+                fontSize: '0.8rem',
+                fontWeight: '600',
+                borderRadius: '10px',
+                boxShadow: '0 4px 12px rgba(156, 39, 176, 0.2)'
+              }}
+            >
+              <Sparkles size={16} /> <span className="hide-mobile">Generar Post</span>
+            </button>
+            <button
+              onClick={() => setIsAuthenticated(false)}
+              className="btn-outline"
+              style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '0.4rem', 
+                padding: '0.5rem 0.8rem', 
+                color: '#C62828', 
+                borderColor: 'rgba(198, 40, 40, 0.15)',
+                background: 'white',
+                fontSize: '0.8rem',
+                fontWeight: '600',
+                borderRadius: '10px'
+              }}
+            >
+              <LogOut size={16} /> <span className="hide-mobile">Salir</span>
+            </button>
+          </div>
         </div>
 
         {/* Dashboard View - BENTO GRID */}
@@ -828,6 +885,126 @@ export default function AdminView() {
         )}
 
       </main>
+
+      {/* AI POST MODAL */}
+      {showPostModal && (
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 5000, padding: '1rem' }}>
+          <div className="glass-panel animate-scale-in" style={{ width: '100%', maxWidth: '550px', maxHeight: '90vh', overflowY: 'auto', padding: '1.5rem', background: 'white', position: 'relative' }}>
+            <button onClick={resetPostModal} style={{ position: 'absolute', top: '1rem', right: '1rem', background: 'none', border: 'none', cursor: 'pointer', color: '#666' }}>
+              <X size={24} />
+            </button>
+
+            {!selectedProductForPost ? (
+              <>
+                <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
+                  <div style={{ background: 'linear-gradient(135deg, #673AB7, #9C27B0)', width: '60px', height: '60px', borderRadius: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1rem', boxShadow: '0 8px 20px rgba(103, 58, 183, 0.3)' }}>
+                    <Sparkles size={30} color="white" />
+                  </div>
+                  <h2 style={{ fontSize: '1.5rem', margin: 0 }}>Generar Publicación</h2>
+                  <p style={{ color: 'var(--color-text-light)', fontSize: '0.9rem' }}>Selecciona un producto para que la IA lo embellezca.</p>
+                </div>
+
+                <div style={{ position: 'relative', marginBottom: '1rem' }}>
+                  <Search size={18} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: '#999' }} />
+                  <input 
+                    type="text" 
+                    className="input-field" 
+                    placeholder="Buscar producto..." 
+                    value={searchProduct}
+                    onChange={(e) => setSearchProduct(e.target.value)}
+                    style={{ paddingLeft: '2.8rem' }}
+                  />
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', maxHeight: '400px', overflowY: 'auto', paddingRight: '0.5rem' }}>
+                  {admin.products
+                    .filter(p => !p.sold_at && (p.name.toLowerCase().includes(searchProduct.toLowerCase()) || (p.brand && p.brand.toLowerCase().includes(searchProduct.toLowerCase()))))
+                    .map(p => (
+                      <div 
+                        key={p.id} 
+                        onClick={() => handleGenerateAI(p)}
+                        style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '0.75rem', borderRadius: '12px', border: '1px solid #eee', cursor: 'pointer', transition: 'all 0.2s ease' }}
+                        onMouseOver={(e) => e.currentTarget.style.borderColor = 'var(--color-primary)'}
+                        onMouseOut={(e) => e.currentTarget.style.borderColor = '#eee'}
+                      >
+                        <img src={p.images?.[0] || 'https://placehold.co/50x50'} style={{ width: '50px', height: '50px', borderRadius: '8px', objectFit: 'cover' }} />
+                        <div style={{ flexGrow: 1 }}>
+                          <div style={{ fontSize: '0.9rem', fontWeight: '700' }}>{p.name}</div>
+                          <div style={{ fontSize: '0.75rem', color: '#666' }}>C$ {p.price} • {p.brand || 'Sin marca'}</div>
+                        </div>
+                        <ChevronRight size={18} color="#ccc" />
+                      </div>
+                    ))}
+                </div>
+              </>
+            ) : (
+              <>
+                <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
+                  <button 
+                    onClick={() => { setSelectedProductForPost(null); setGeneratedContent(null); }}
+                    style={{ background: 'none', border: 'none', color: 'var(--color-primary-dark)', fontWeight: '600', fontSize: '0.8rem', cursor: 'pointer', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.3rem', margin: '0 auto' }}
+                  >
+                    <ChevronRight size={14} style={{ transform: 'rotate(180deg)' }} /> Volver a la lista
+                  </button>
+                  <h2 style={{ fontSize: '1.4rem' }}>{isGenerating ? 'Generando magia...' : '¡Publicación Lista!'}</h2>
+                </div>
+
+                {isGenerating ? (
+                  <div style={{ textAlign: 'center', padding: '3rem 0' }}>
+                    <div className="spinner" style={{ margin: '0 auto 1.5rem', width: '40px', height: '40px', border: '4px solid rgba(103, 58, 183, 0.1)', borderTopColor: 'var(--color-primary)', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
+                    <p style={{ fontStyle: 'italic', color: '#666' }}>La IA está redactando algo espectacular para <strong>{selectedProductForPost.name}</strong>...</p>
+                  </div>
+                ) : generatedContent && (
+                  <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                    {/* Título Section */}
+                    <div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                        <span style={{ fontSize: '0.75rem', fontWeight: '800', color: 'var(--color-primary-dark)', letterSpacing: '0.05em' }}>TÍTULO SUGERIDO</span>
+                        <button 
+                          onClick={() => copyToClipboard(generatedContent.title, 'title')}
+                          style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', background: copiedField === 'title' ? '#E8F5E9' : '#f0f0f0', border: 'none', padding: '0.4rem 0.8rem', borderRadius: '8px', fontSize: '0.75rem', fontWeight: '600', cursor: 'pointer', color: copiedField === 'title' ? '#2E7D32' : '#333', transition: 'all 0.2s' }}
+                        >
+                          {copiedField === 'title' ? <Check size={14} /> : <Copy size={14} />}
+                          {copiedField === 'title' ? 'Copiado' : 'Copiar'}
+                        </button>
+                      </div>
+                      <div style={{ padding: '1rem', background: '#f9f9f9', borderRadius: '12px', border: '1px solid #eee', fontSize: '1rem', fontWeight: '700' }}>
+                        {generatedContent.title}
+                      </div>
+                    </div>
+
+                    {/* Descripción Section */}
+                    <div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                        <span style={{ fontSize: '0.75rem', fontWeight: '800', color: 'var(--color-primary-dark)', letterSpacing: '0.05em' }}>DESCRIPCIÓN PARA FACEBOOK</span>
+                        <button 
+                          onClick={() => copyToClipboard(generatedContent.description, 'desc')}
+                          style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', background: copiedField === 'desc' ? '#E8F5E9' : '#f0f0f0', border: 'none', padding: '0.4rem 0.8rem', borderRadius: '8px', fontSize: '0.75rem', fontWeight: '600', cursor: 'pointer', color: copiedField === 'desc' ? '#2E7D32' : '#333', transition: 'all 0.2s' }}
+                        >
+                          {copiedField === 'desc' ? <Check size={14} /> : <Copy size={14} />}
+                          {copiedField === 'desc' ? 'Copiado' : 'Copiar'}
+                        </button>
+                      </div>
+                      <div style={{ padding: '1rem', background: '#f9f9f9', borderRadius: '12px', border: '1px solid #eee', fontSize: '0.9rem', lineHeight: '1.6', whiteSpace: 'pre-wrap', maxHeight: '250px', overflowY: 'auto' }}>
+                        {generatedContent.description}
+                        {"\n\n"}🛍️ Ver en catálogo: {window.location.origin}/producto/{selectedProductForPost.id}
+                      </div>
+                    </div>
+
+                    <button 
+                      className="btn-primary" 
+                      onClick={() => handleGenerateAI(selectedProductForPost)}
+                      style={{ padding: '0.8rem', background: '#f0f0f0', color: '#333', border: 'none', fontSize: '0.85rem', fontWeight: '600' }}
+                    >
+                      Regenerar con otro tono
+                    </button>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
