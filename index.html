@@ -7,11 +7,33 @@
     <meta name="theme-color" content="#673ab7" />
     <link rel="manifest" href="/manifest.json" />
     <script>
+      // Forzar actualización del Service Worker viejo en todos los dispositivos
       if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
+        navigator.serviceWorker.getRegistrations().then(function(registrations) {
+          registrations.forEach(function(reg) { reg.unregister(); });
+        }).then(function() {
           navigator.serviceWorker.register('/sw.js');
         });
       }
+
+      // Detectar dispositivos de gama baja y desactivar efectos pesados
+      (function() {
+        var isLowEnd = false;
+        // Menos de 4GB RAM o menos de 4 cores = gama baja
+        if (navigator.deviceMemory && navigator.deviceMemory < 4) isLowEnd = true;
+        if (navigator.hardwareConcurrency && navigator.hardwareConcurrency < 4) isLowEnd = true;
+        // Canvas test: si el GPU no puede renderizar un blur básico, es problemático
+        try {
+          var canvas = document.createElement('canvas');
+          canvas.width = 1; canvas.height = 1;
+          var ctx = canvas.getContext('2d');
+          if (!ctx) isLowEnd = true;
+        } catch(e) { isLowEnd = true; }
+        
+        if (isLowEnd) {
+          document.documentElement.classList.add('low-end-device');
+        }
+      })();
     </script>
     <title>El Armario - Carmen Boutique</title>
   </head>

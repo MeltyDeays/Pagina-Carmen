@@ -105,6 +105,36 @@ button {
   }
 }
 
+/* FORZAR desactivación en dispositivos de gama baja (detectado por JS en index.html) */
+.low-end-device .glass-panel {
+  background: rgba(255, 255, 255, 0.95) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.low-end-device .modal-overlay {
+  background: rgba(0, 0, 0, 0.5) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.low-end-device .btn-outline {
+  background-color: rgba(255, 255, 255, 0.9) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.low-end-device .slider-arrow {
+  background: rgba(255, 255, 255, 0.9) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.low-end-device .animate-fade-in {
+  animation: none !important;
+  opacity: 1 !important;
+}
+
 /* Hover de tarjeta premium */
 .product-card-hover:hover {
   transform: translateY(-8px);
