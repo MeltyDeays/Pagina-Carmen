@@ -218,6 +218,6 @@ export function useAdminController() {
     handleProductSubmit, handleCategorySubmit, handleMarkAsSold,
     handleDeleteProduct, handleDeleteCategory,
     startEditProduct, startEditCategory,
-    editingId, editingCatId
+    editingId, setEditingId, editingCatId, setEditingCatId
   };
 }

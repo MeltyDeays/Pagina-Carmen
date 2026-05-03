@@ -359,14 +359,28 @@ export default function AdminView() {
               <h2 style={{ fontSize: '1.2rem', fontWeight: '700' }}>Gestión de Inventario</h2>
               <button 
                 className="btn-primary" 
-                style={{ padding: '0.6rem 1rem', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+                style={{ 
+                  padding: '0.75rem 1.5rem', 
+                  borderRadius: '30px',
+                  background: 'linear-gradient(135deg, var(--color-primary), var(--color-primary-dark))',
+                  border: 'none',
+                  boxShadow: '0 8px 20px rgba(103, 58, 183, 0.25)',
+                  fontSize: '0.85rem', 
+                  fontWeight: '700',
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  gap: '0.6rem',
+                  transition: 'transform 0.2s ease'
+                }}
+                onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
+                onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
                 onClick={() => {
                   admin.setEditingId(null);
                   admin.setProductForm({ name: '', description: '', price: '', brand: '', category_id: '', materials: '', condition: '', size: '', images: [], is_published: false });
                   admin.setShowProductForm(!admin.showProductForm);
                 }}
               >
-                <Plus size={18} /> {admin.showProductForm ? 'Cerrar' : 'Nueva Prenda'}
+                <Plus size={18} /> {admin.showProductForm ? 'Cerrar Panel' : 'Añadir Prenda'}
               </button>
             </div>
 
@@ -517,14 +531,28 @@ export default function AdminView() {
               <h2 style={{ fontSize: '1.2rem', fontWeight: '700' }}>Listado de Categorías</h2>
               <button 
                 className="btn-primary" 
-                style={{ padding: '0.6rem 1rem', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+                style={{ 
+                  padding: '0.75rem 1.5rem', 
+                  borderRadius: '30px',
+                  background: 'linear-gradient(135deg, var(--color-primary), var(--color-primary-dark))',
+                  border: 'none',
+                  boxShadow: '0 8px 20px rgba(103, 58, 183, 0.25)',
+                  fontSize: '0.85rem', 
+                  fontWeight: '700',
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  gap: '0.6rem',
+                  transition: 'transform 0.2s ease'
+                }}
+                onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
+                onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
                 onClick={() => {
                   admin.setEditingCatId(null);
                   admin.setCategoryForm({ name: '', description: '' });
                   admin.setShowCategoryForm(!admin.showCategoryForm);
                 }}
               >
-                <Plus size={18} /> {admin.showCategoryForm ? 'Cerrar' : 'Nueva Categoría'}
+                <Plus size={18} /> {admin.showCategoryForm ? 'Cerrar Panel' : 'Añadir Categoría'}
               </button>
             </div>
 
