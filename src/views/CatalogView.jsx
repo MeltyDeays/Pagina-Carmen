@@ -5,7 +5,7 @@ import { useCartController } from '../controllers/useCartController';
 import ProductCard from '../components/ProductCard';
 import ProductDetailModal from '../components/ProductDetailModal';
 import CartModal from '../components/CartModal';
-import { TelegramService } from '../services/TelegramService';
+import { WhatsAppService } from '../services/WhatsAppService';
 
 export default function CatalogView() {
   const { products, categories, loading, error, selectedCategory, setSelectedCategory, searchQuery, setSearchQuery } = useCatalogController();
@@ -46,8 +46,8 @@ export default function CatalogView() {
     }, 1700);
   };
 
-  const handleCheckout = async (whatsapp) => {
-    const success = await TelegramService.sendOrder(cartController.cart, cartController.totalAmount, whatsapp);
+  const handleCheckout = () => {
+    const success = WhatsAppService.sendOrder(cartController.cart, cartController.totalAmount);
     if (success) {
       setShowSuccess(true);
       cartController.setCart([]);
@@ -55,7 +55,7 @@ export default function CatalogView() {
       // Auto-cerrar notificación después de 5 segundos
       setTimeout(() => setShowSuccess(false), 5000);
     } else {
-      alert('Hubo un error enviando tu cotización. Por favor intenta de nuevo.');
+      alert('Hubo un error al intentar abrir WhatsApp. Por favor intenta de nuevo.');
     }
   };
 

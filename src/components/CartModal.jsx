@@ -2,8 +2,6 @@ import { X, Trash2, Send, ShoppingBag } from 'lucide-react';
 import { useState } from 'react';
 
 export default function CartModal({ cart, isCartOpen, toggleCart, removeFromCart, totalAmount, onCheckout }) {
-  const [whatsapp, setWhatsapp] = useState('');
-
   if (!isCartOpen) return null;
 
   return (
@@ -75,21 +73,10 @@ export default function CartModal({ cart, isCartOpen, toggleCart, removeFromCart
                 🚚 Envíos por cargotrans y buses locales.<br/>
                 💵 Transferencias o pago en efectivo.
               </p>
-              <input 
-                type="text" 
-                placeholder="Tu número de WhatsApp" 
-                className="input-field"
-                value={whatsapp}
-                onChange={(e) => setWhatsapp(e.target.value)}
-                style={{ marginBottom: '1rem', border: '1px solid var(--color-primary)' }}
-              />
               <button 
                 className="btn-primary" 
                 style={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.5rem', padding: '1rem' }}
-                onClick={() => {
-                  if(!whatsapp) return alert('Por favor, ingresa tu número de WhatsApp');
-                  onCheckout(whatsapp);
-                }}
+                onClick={() => onCheckout()}
               >
                 <Send size={18} /> Solicitar Cotización por WhatsApp
               </button>
