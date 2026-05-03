@@ -127,6 +127,9 @@ export default function AdminView() {
           <button className={`sidebar-link ${activeTab === 'categories' ? 'active' : ''}`} onClick={() => setActiveTab('categories')}>
             <Tag size={20} /> Categorías
           </button>
+          <button className={`sidebar-link ${activeTab === 'sold' ? 'active' : ''}`} onClick={() => setActiveTab('sold')}>
+            <CheckCircle size={20} /> Historial Ventas
+          </button>
         </nav>
       </aside>
 
@@ -156,7 +159,8 @@ export default function AdminView() {
             {[
               { id: 'dashboard', label: 'Resumen', icon: LayoutDashboard },
               { id: 'products', label: 'Inventario', icon: Package },
-              { id: 'categories', label: 'Categorías', icon: Tag }
+              { id: 'categories', label: 'Categorías', icon: Tag },
+              { id: 'sold', label: 'Ventas', icon: CheckCircle }
             ].map(item => (
               <button 
                 key={item.id}
@@ -265,6 +269,7 @@ export default function AdminView() {
                 {activeTab === 'dashboard' && "Panel Maestro"}
                 {activeTab === 'products' && "Inventario"}
                 {activeTab === 'categories' && "Colecciones"}
+                {activeTab === 'sold' && "Historial de Ventas"}
               </h1>
               <p style={{ color: 'var(--color-text-light)', fontSize: '0.75rem', fontWeight: '500', margin: 0 }}>
                 Carmen Boutique
@@ -363,7 +368,7 @@ export default function AdminView() {
             {/* Seccion 3: Acciones Rápidas (Compacto) */}
             <div className="glass-panel" style={{ padding: '1.25rem' }}>
               <h3 style={{ marginBottom: '1rem', fontSize: '0.9rem', fontWeight: '700', color: 'var(--color-text-light)' }}>GESTIÓN RÁPIDA</h3>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.75rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.75rem' }}>
                  <button className="btn-outline" onClick={() => setActiveTab('products')} style={{ padding: '0.75rem', borderRadius: '12px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.3rem', background: 'white' }}>
                     <Package size={18} color="var(--color-primary-dark)" />
                     <span style={{ fontSize: '0.65rem', fontWeight: '700' }}>Inventario</span>
@@ -374,7 +379,11 @@ export default function AdminView() {
                  </button>
                  <button className="btn-outline" onClick={() => setActiveTab('categories')} style={{ padding: '0.75rem', borderRadius: '12px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.3rem', background: 'white' }}>
                     <Tag size={18} color="var(--color-primary-dark)" />
-                    <span style={{ fontSize: '0.65rem', fontWeight: '700' }}>Categorías</span>
+                    <span style={{ fontSize: '0.65rem', fontWeight: '700' }}>Colecciones</span>
+                 </button>
+                 <button className="btn-outline" onClick={() => setActiveTab('sold')} style={{ padding: '0.75rem', borderRadius: '12px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.3rem', background: 'white' }}>
+                    <CheckCircle size={18} color="#2E7D32" />
+                    <span style={{ fontSize: '0.65rem', fontWeight: '700' }}>Ventas</span>
                  </button>
               </div>
             </div>
@@ -572,12 +581,12 @@ export default function AdminView() {
 
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              {admin.filteredProducts.length === 0 ? (
+              {admin.filteredProducts.filter(p => !p.sold_at).length === 0 ? (
                 <div className="glass-panel" style={{ padding: '3rem', textAlign: 'center', color: 'var(--color-text-light)' }}>
-                  No hay prendas que coincidan con el filtro.
+                  No hay prendas disponibles en esta sección.
                 </div>
               ) : (
-                admin.filteredProducts.map((p, idx) => (
+                admin.filteredProducts.filter(p => !p.sold_at).map((p, idx) => (
                   <div key={p.id} className="glass-panel animate-fade-in" style={{ padding: '1rem', display: 'flex', gap: '1rem', alignItems: 'center', border: '1px solid rgba(103, 58, 183, 0.05)' }}>
                     {/* Imagen Miniatura */}
                     <div style={{ width: '70px', height: '70px', borderRadius: '12px', overflow: 'hidden', flexShrink: 0, backgroundColor: '#f0f0f0' }}>
@@ -764,6 +773,51 @@ export default function AdminView() {
                   })
                 )}
              </div>
+          </div>
+        )}
+
+        {/* Sold Items View */}
+        {activeTab === 'sold' && (
+          <div className="animate-fade-in">
+            <div style={{ marginBottom: '1.5rem' }}>
+              <h2 style={{ fontSize: '1rem', fontWeight: '700', margin: 0, opacity: 0.8 }}>Prendas Vendidas</h2>
+              <p style={{ fontSize: '0.8rem', color: 'var(--color-text-light)' }}>Histórico de todas las ventas realizadas.</p>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              {admin.products.filter(p => p.sold_at).length === 0 ? (
+                <div className="glass-panel" style={{ padding: '4rem', textAlign: 'center', color: 'var(--color-text-light)' }}>
+                  Aún no tienes ventas registradas. ¡Ánimo!
+                </div>
+              ) : (
+                admin.products
+                  .filter(p => p.sold_at)
+                  .sort((a, b) => new Date(b.sold_at) - new Date(a.sold_at))
+                  .map((p) => (
+                    <div key={p.id} className="glass-panel animate-fade-in" style={{ padding: '1rem', display: 'flex', gap: '1rem', alignItems: 'center', borderLeft: '4px solid #2E7D32' }}>
+                       <div style={{ width: '60px', height: '60px', borderRadius: '10px', overflow: 'hidden', flexShrink: 0 }}>
+                        <img 
+                          src={p.images && p.images[0] ? p.images[0] : 'https://placehold.co/100x100?text=Sin+Foto'} 
+                          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                          alt={p.name}
+                        />
+                      </div>
+                      <div style={{ flexGrow: 1 }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                          <h4 style={{ margin: 0, fontSize: '0.9rem' }}>{p.name}</h4>
+                          <span style={{ fontWeight: '800', color: '#2E7D32' }}>C${p.price}</span>
+                        </div>
+                        <div style={{ fontSize: '0.75rem', color: 'var(--color-text-light)' }}>
+                          Vendido el: {new Date(p.sold_at).toLocaleDateString()}
+                        </div>
+                      </div>
+                      <button className="btn-outline" style={{ padding: '0.5rem', borderRadius: '8px', color: '#C62828' }} onClick={() => admin.handleDeleteProduct(p.id)}>
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
+                  ))
+              )}
+            </div>
           </div>
         )}
 
