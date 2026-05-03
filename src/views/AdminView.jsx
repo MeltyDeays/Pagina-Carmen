@@ -719,7 +719,7 @@ export default function AdminView() {
                   </div>
                 ) : (
                   admin.categories.map(c => {
-                    const count = admin.products.filter(p => p.category_id === c.id).length;
+                    const count = admin.products.filter(p => p.category_id === c.id && !p.sold_at).length;
                     return (
                       <div key={c.id} className="glass-panel" style={{ padding: '1.5rem', transition: 'all 0.3s ease', position: 'relative', overflow: 'hidden' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', position: 'relative', zIndex: 1 }}>
