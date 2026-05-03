@@ -9,7 +9,7 @@ export default function CartModal({ cart, isCartOpen, toggleCart, removeFromCart
       position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
       backgroundColor: 'rgba(0,0,0,0.4)', zIndex: 1000,
       display: 'flex', justifyContent: 'flex-end',
-      backdropFilter: 'blur(8px)',
+
       animation: 'fadeIn 0.3s ease'
     }}>
       <div className="glass-panel" style={{
@@ -61,7 +61,7 @@ export default function CartModal({ cart, isCartOpen, toggleCart, removeFromCart
         </div>
 
         {cart.length > 0 && (
-          <div style={{ padding: '1.5rem', background: 'rgba(255,255,255,0.8)', borderTop: '1px solid rgba(0,0,0,0.05)', backdropFilter: 'blur(10px)' }}>
+          <div style={{ padding: '1.5rem', background: 'rgba(255,255,255,0.95)', borderTop: '1px solid rgba(0,0,0,0.05)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1.5rem', fontSize: '1.3rem', fontWeight: 'bold', color: 'var(--color-text-heading)' }}>
               <span>Total:</span>
               <span>C${totalAmount.toFixed(2)}</span>

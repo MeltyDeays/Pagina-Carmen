@@ -34,8 +34,7 @@ export default function ProductCard({ product, onAddToCart, onOpenDetail, index 
             position: 'absolute',
             top: '10px',
             right: '10px',
-            background: 'rgba(255, 255, 255, 0.9)',
-            backdropFilter: 'blur(4px)',
+            background: 'rgba(255, 255, 255, 0.95)',
             color: 'var(--color-text-heading)',
             padding: '2px 8px',
             borderRadius: '8px',
@@ -50,7 +49,7 @@ export default function ProductCard({ product, onAddToCart, onOpenDetail, index 
         )}
 
         {product.sold_at && (
-          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(255,255,255,0.4)', backdropFilter: 'blur(2px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2 }}>
+          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(255,255,255,0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2 }}>
             <span className="sold-badge" style={{ fontSize: '0.8rem' }}>VENDIDO</span>
           </div>
         )}

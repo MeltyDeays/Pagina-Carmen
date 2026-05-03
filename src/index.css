@@ -89,13 +89,20 @@ button {
 
 /* Glassmorphism Refinado */
 .glass-panel {
-  background: var(--color-surface);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background: rgba(255, 255, 255, 0.92);
   border: 1px solid rgba(255, 255, 255, 0.8);
   box-shadow: var(--shadow-glass), inset 0 1px 0 rgba(255, 255, 255, 0.6);
   border-radius: var(--radius-lg);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Glassmorphism solo en dispositivos que lo soportan */
+@supports (backdrop-filter: blur(20px)) or (-webkit-backdrop-filter: blur(20px)) {
+  .glass-panel {
+    background: var(--color-surface);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
 }
 
 /* Hover de tarjeta premium */
@@ -141,13 +148,19 @@ button {
 }
 
 .btn-outline {
-  background-color: rgba(255, 255, 255, 0.5);
-  backdrop-filter: blur(5px);
+  background-color: rgba(255, 255, 255, 0.85);
   border: 1px solid var(--color-primary-dark);
   color: var(--color-text-main);
   padding: 0.75rem 1.5rem;
   border-radius: var(--radius-pill);
   font-weight: 500;
+}
+
+@supports (backdrop-filter: blur(5px)) or (-webkit-backdrop-filter: blur(5px)) {
+  .btn-outline {
+    background-color: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(5px);
+  }
 }
 
 .btn-outline.active {
@@ -215,8 +228,7 @@ button {
 }
 
 .animate-fade-in {
-  animation: fadeIn 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-  opacity: 0;
+  animation: fadeIn 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
 
 @keyframes scaleIn {
@@ -513,13 +525,19 @@ button {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(8px);
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 2000;
   padding: 1rem;
+}
+
+@supports (backdrop-filter: blur(8px)) or (-webkit-backdrop-filter: blur(8px)) {
+  .modal-overlay {
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(8px);
+  }
 }
 
 .modal-content {
@@ -632,8 +650,7 @@ button {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(4px);
+  background: rgba(255, 255, 255, 0.85);
   border: none;
   width: 40px;
   height: 40px;
@@ -645,6 +662,13 @@ button {
   z-index: 6;
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   transition: all 0.2s ease;
+}
+
+@supports (backdrop-filter: blur(4px)) or (-webkit-backdrop-filter: blur(4px)) {
+  .slider-arrow {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(4px);
+  }
 }
 
 .slider-arrow:hover {

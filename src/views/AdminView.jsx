@@ -8,7 +8,7 @@ export default function AdminView() {
   const [phone, setPhone] = useState('');
   const [activeTab, setActiveTab] = useState('dashboard'); // Restaurado
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [fabPos, setFabPos] = useState({ x: window.innerWidth - 80, y: window.innerHeight - 80 });
+  const [fabPos, setFabPos] = useState({ x: (typeof window !== 'undefined' ? window.innerWidth : 360) - 80, y: (typeof window !== 'undefined' ? window.innerHeight : 640) - 80 });
   const [isDragging, setIsDragging] = useState(false);
   const dragStart = useRef({ x: 0, y: 0 });
 
@@ -209,7 +209,7 @@ export default function AdminView() {
         {isMenuOpen && (
           <div 
             onClick={() => setIsMenuOpen(false)}
-            style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.3)', backdropFilter: 'blur(4px)', zIndex: 1001 }} 
+            style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.4)', zIndex: 1001 }} 
           />
         )}
         
@@ -916,7 +916,7 @@ export default function AdminView() {
 
       {/* AI POST MODAL */}
       {showPostModal && (
-        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 5000, padding: '1rem' }}>
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 5000, padding: '1rem' }}>
           <div className="glass-panel animate-scale-in" style={{ width: '100%', maxWidth: '550px', maxHeight: '90vh', overflowY: 'auto', padding: '1.5rem', background: 'white', position: 'relative' }}>
             <button 
               type="button"

@@ -86,7 +86,7 @@ export default function ProductDetailModal({ product, onClose, onAddToCart }) {
           )}
 
           {/* Ayuda visual para inspección */}
-          <div style={{ position: 'absolute', top: '15px', left: '15px', background: 'rgba(0,0,0,0.3)', color: 'white', padding: '4px 8px', borderRadius: '8px', fontSize: '0.65rem', display: 'flex', alignItems: 'center', gap: '4px', backdropFilter: 'blur(4px)', pointerEvents: 'none' }}>
+          <div style={{ position: 'absolute', top: '15px', left: '15px', background: 'rgba(0,0,0,0.45)', color: 'white', padding: '4px 8px', borderRadius: '8px', fontSize: '0.65rem', display: 'flex', alignItems: 'center', gap: '4px', pointerEvents: 'none' }}>
             <ZoomIn size={12} /> Desliza para inspeccionar
           </div>
         </div>
