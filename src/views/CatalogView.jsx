@@ -21,26 +21,34 @@ export default function CatalogView() {
 
   // Deep linking logic
   useEffect(() => {
-    if (urlProductId && products.length > 0) {
-      const product = products.find(p => p.id === urlProductId);
-      if (product) {
-        if (product.sold_at) {
-          alert("¡Lo sentimos! Este producto ya ha sido vendido. Te redirigimos al catálogo para que veas más tesoros. ✨");
-          navigate('/', { replace: true });
+    if (products.length > 0) {
+      if (urlProductId) {
+        const product = products.find(p => p.id === urlProductId);
+        if (product) {
+          if (product.sold_at) {
+            alert("¡Lo sentimos! Este producto ya ha sido vendido. Te redirigimos al catálogo para que veas más tesoros. ✨");
+            navigate('/', { replace: true });
+          } else {
+            setSelectedProduct(product);
+          }
         } else {
-          setSelectedProduct(product);
+          navigate('/', { replace: true });
         }
       } else {
-        // Si el ID no existe en los productos cargados
-        navigate('/', { replace: true });
+        // Si no hay ID en la URL, nos aseguramos de cerrar el modal si venía de un link
+        setSelectedProduct(null);
       }
     }
   }, [urlProductId, products, navigate]);
 
   const closeDetail = () => {
-    setSelectedProduct(null);
     if (urlProductId) {
+      // Si hay un ID en la URL, simplemente navegamos a la raíz.
+      // El useEffect se encargará de hacer setSelectedProduct(null).
       navigate('/', { replace: true });
+    } else {
+      // Si se abrió manualmente, cerramos manualmente
+      setSelectedProduct(null);
     }
   };
 
